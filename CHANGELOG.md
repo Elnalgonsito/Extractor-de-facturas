@@ -23,3 +23,7 @@
 ## Etapa 5: Extracción Contable Avanzada
 - **Prompt Contable (Gemini):** Refinamiento drástico del prompt para instruir a la IA a actuar como analista de datos contables. Filtrado automático de ruido (encuestas, puntos).
 - **Modelado Complejo de Datos:** Expansión de `InvoiceData` y creación de `InvoiceItem` para soportar estructura JSON compleja (sucursal, método de pago, régimen fiscal, desglose de artículos individuales, subtotal e impuestos).
+
+## Etapa 6: Resumen Estructurado en UI
+- **Transformación de Datos:** Creación de la función `generarResumenLimpio` para convertir el objeto de datos complejo extraído por la IA en un String estructurado y legible con iteración de artículos.
+- **Limpieza de Interfaz:** Reemplazo del bloque de "Texto Crudo" (OCR) en la pantalla de detalles por un resumen limpio generado dinámicamente.

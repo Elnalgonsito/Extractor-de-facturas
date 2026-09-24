@@ -58,3 +58,31 @@ class GeminiInvoiceParser {
         return@withContext null
     }
 }
+
+fun generarResumenLimpio(datos: InvoiceData, lineasEspaciado: Int = 1): String {
+    val space = "\n".repeat(lineasEspaciado)
+    val builder = StringBuilder()
+
+    datos.proveedor?.let { builder.append("Proveedor: $it").append(space) }
+    datos.sucursal?.let { builder.append("Sucursal: $it").append(space) }
+    datos.fecha_hora?.let { builder.append("Fecha y Hora: $it").append(space) }
+    datos.regimen_fiscal?.let { builder.append("Régimen Fiscal: $it").append(space) }
+
+    if (!datos.articulos.isNullOrEmpty()) {
+        builder.append("Artículos:").append(space)
+        datos.articulos.forEach { art ->
+            val cant = art.cantidad?.toString() ?: "1"
+            val desc = art.descripcion ?: "Desconocido"
+            val imp = art.importe?.toString() ?: "0.0"
+            builder.append("- $cant x $desc - $$imp").append(space)
+        }
+    }
+
+    datos.subtotal?.let { builder.append("Subtotal: $$it").append(space) }
+    datos.impuestos?.let { builder.append("Impuestos: $it").append(space) }
+    datos.total?.let { builder.append("Total: $$it").append(space) }
+    datos.metodo_pago?.let { builder.append("Método de Pago: $it").append(space) }
+    datos.link_facturacion?.let { builder.append("Link de Facturación: $it").append(space) }
+
+    return builder.toString().trimEnd()
+}

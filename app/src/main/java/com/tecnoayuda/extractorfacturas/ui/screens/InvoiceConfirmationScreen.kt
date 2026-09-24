@@ -44,6 +44,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import com.tecnoayuda.extractorfacturas.GeminiInvoiceParser
+import com.tecnoayuda.extractorfacturas.InvoiceData
+import com.tecnoayuda.extractorfacturas.generarResumenLimpio
 import com.tecnoayuda.extractorfacturas.utils.extraerDatosDelTicket
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,6 +69,7 @@ fun InvoiceConfirmationScreen(
     var correoDestino by remember(initialCorreoDestino) { mutableStateOf(initialCorreoDestino ?: "") }
     var isLoading by remember { mutableStateOf(false) }
     var extractedText by remember(initialExtractedText) { mutableStateOf(initialExtractedText ?: "") }
+    var currentInvoiceData by remember { mutableStateOf<InvoiceData?>(null) }
 
     val parser = remember { GeminiInvoiceParser() }
     val context = LocalContext.current
@@ -82,6 +85,7 @@ fun InvoiceConfirmationScreen(
             // AI parsing
             val parsedData = parser.parseInvoice(initialExtractedText)
             if (parsedData != null) {
+                currentInvoiceData = parsedData
                 if (!parsedData.proveedor.isNullOrBlank()) provider = parsedData.proveedor
                 if (!parsedData.fecha_hora.isNullOrBlank()) date = parsedData.fecha_hora
                 if (parsedData.total != null) total = parsedData.total.toString()
@@ -171,17 +175,12 @@ fun InvoiceConfirmationScreen(
                 shape = MaterialTheme.shapes.large
             )
             
-            if (extractedText.isNotBlank()) {
-                OutlinedTextField(
-                    value = extractedText,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Extracted Text (Raw)") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp),
-                    shape = MaterialTheme.shapes.large,
-                    maxLines = 5
+            val textToDisplay = currentInvoiceData?.let { generarResumenLimpio(it, 1) } ?: extractedText
+            if (textToDisplay.isNotEmpty()) {
+                Text(
+                    text = "Resumen del Ticket:\n\n$textToDisplay",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
 
