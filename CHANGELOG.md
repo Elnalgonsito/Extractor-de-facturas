@@ -40,3 +40,7 @@
 
 ## Etapa 10: Limpieza Definitiva de UI y Correo
 - **Eliminación de Texto OCR:** Remoción permanente del texto "crudo" del flujo visible y de los exportables (email). Todo se apoya ahora exclusivamente en el formateador limpio y estructurado `formatearTicketLimpio` alimentado por el JSON generado por IA.
+
+## Etapa 11: Manejo de Errores y Limpieza de Markdown
+- **Resiliencia en Parsing:** Implementación de `try-catch` en la corrutina de análisis para capturar errores de formato o red, actualizando proactivamente los campos de la UI con mensajes de error descriptivos.
+- **Sanitización de JSON:** Eliminación forzada de etiquetas Markdown (` ```json `) de la respuesta de Gemini antes del parseo para prevenir crashes silenciosos.

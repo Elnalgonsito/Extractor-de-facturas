@@ -70,6 +70,7 @@ fun InvoiceConfirmationScreen(
     var isLoading by remember { mutableStateOf(false) }
     var extractedText by remember(initialExtractedText) { mutableStateOf(initialExtractedText ?: "") }
     var currentInvoiceData by remember { mutableStateOf<InvoiceData?>(null) }
+    var parsingStatus by remember { mutableStateOf("Esperando análisis de Inteligencia Artificial...") }
 
     val parser = remember { GeminiInvoiceParser() }
     val context = LocalContext.current
@@ -82,14 +83,20 @@ fun InvoiceConfirmationScreen(
             if (date.isBlank() && regexData.date != null) date = regexData.date
             if (total.isBlank() && regexData.total != null) total = regexData.total
             
-            // AI parsing
-            val parsedData = parser.parseInvoice(initialExtractedText)
-            if (parsedData != null) {
+            try {
+                // AI parsing
+                val parsedData = parser.parseInvoice(initialExtractedText)
                 currentInvoiceData = parsedData
                 if (!parsedData.proveedor.isNullOrBlank()) provider = parsedData.proveedor
                 if (!parsedData.fecha.isNullOrBlank()) date = parsedData.fecha
                 if (parsedData.total != null) total = parsedData.total.toString()
                 if (!parsedData.link_facturacion.isNullOrBlank()) linkFactura = parsedData.link_facturacion
+            } catch (e: Exception) {
+                val errorMsg = "Error de procesamiento: ${e.localizedMessage}"
+                provider = errorMsg
+                date = errorMsg
+                total = errorMsg
+                parsingStatus = errorMsg
             }
             isLoading = false
         }
@@ -178,7 +185,7 @@ fun InvoiceConfirmationScreen(
             val jsonGeneradoPorIA = currentInvoiceData?.let {
                 kotlinx.serialization.json.Json.encodeToString(com.tecnoayuda.extractorfacturas.InvoiceData.serializer(), it)
             }
-            val textToDisplay = jsonGeneradoPorIA?.let { formatearTicketLimpio(it, 1) } ?: "Esperando análisis de Inteligencia Artificial..."
+            val textToDisplay = jsonGeneradoPorIA?.let { formatearTicketLimpio(it, 1) } ?: parsingStatus
             if (textToDisplay.isNotEmpty()) {
                 Text(
                     text = "Resumen del Ticket:\n\n$textToDisplay",
