@@ -45,7 +45,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import com.tecnoayuda.extractorfacturas.GeminiInvoiceParser
 import com.tecnoayuda.extractorfacturas.InvoiceData
-import com.tecnoayuda.extractorfacturas.generarResumenLimpio
+import com.tecnoayuda.extractorfacturas.formatearTicketLimpio
 import com.tecnoayuda.extractorfacturas.utils.extraerDatosDelTicket
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -175,7 +175,10 @@ fun InvoiceConfirmationScreen(
                 shape = MaterialTheme.shapes.large
             )
             
-            val textToDisplay = currentInvoiceData?.let { generarResumenLimpio(it, 1) } ?: extractedText
+            val jsonGeneradoPorIA = currentInvoiceData?.let {
+                kotlinx.serialization.json.Json.encodeToString(com.tecnoayuda.extractorfacturas.InvoiceData.serializer(), it)
+            }
+            val textToDisplay = jsonGeneradoPorIA?.let { formatearTicketLimpio(it, 1) } ?: "Esperando análisis de Inteligencia Artificial..."
             if (textToDisplay.isNotEmpty()) {
                 Text(
                     text = "Resumen del Ticket:\n\n$textToDisplay",
@@ -232,9 +235,12 @@ fun InvoiceConfirmationScreen(
                         data = Uri.parse("mailto:")
                         putExtra(Intent.EXTRA_EMAIL, arrayOf(correoDestino))
                         putExtra(Intent.EXTRA_SUBJECT, "Datos de Facturación - $provider")
-                        val emailBody = currentInvoiceData?.let {
-                            generarResumenLimpio(it, 2)
-                        } ?: extractedText.takeIf { it.isNotBlank() } ?: "Sin detalles."
+                        val jsonGeneradoPorIA = currentInvoiceData?.let {
+                            kotlinx.serialization.json.Json.encodeToString(com.tecnoayuda.extractorfacturas.InvoiceData.serializer(), it)
+                        }
+                        val emailBody = jsonGeneradoPorIA?.let {
+                            formatearTicketLimpio(it, 2)
+                        } ?: "Sin detalles."
                         putExtra(Intent.EXTRA_TEXT, emailBody)
                     }
                     try {

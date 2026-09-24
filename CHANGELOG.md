@@ -37,3 +37,6 @@
 
 ## Etapa 9: Formateador Dinámico desde JSON
 - **Parsing Directo:** Creación de la función `formatearTicketLimpio` para aceptar directamente un String (JSON) extraído, validarlo/parsearlo, y generar el resumen dinámico. Manejo de excepciones integrado con mensaje de error controlado.
+
+## Etapa 10: Limpieza Definitiva de UI y Correo
+- **Eliminación de Texto OCR:** Remoción permanente del texto "crudo" del flujo visible y de los exportables (email). Todo se apoya ahora exclusivamente en el formateador limpio y estructurado `formatearTicketLimpio` alimentado por el JSON generado por IA.
