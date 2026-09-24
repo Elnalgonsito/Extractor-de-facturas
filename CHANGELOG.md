@@ -1,0 +1,21 @@
+# Historial de Cambios y Mejoras (Changelog)
+
+## Etapa 1: Arquitectura Base e Interfaz Gráfica
+- **Base de Datos (Room):** Configuración inicial con Entidad, DAO y Repositorio para guardar facturas.
+- **Gestión de Estado (ViewModel):** Implementación de MVVM usando Kotlin Coroutines y StateFlow.
+- **UI y Navegación (Jetpack Compose):** Creación de la Lista de Facturas y Formulario de Confirmación usando Material Design 3, y Jetpack Navigation 3 con soporte para pantallas adaptativas.
+
+## Etapa 2: OCR y Captura de Tickets
+- **Photo Picker:** Conexión del botón FAB para abrir la galería nativa de Android y seleccionar imágenes de tickets.
+- **Google ML Kit:** Integración de la librería de reconocimiento de texto (Text Recognition) para extraer en crudo toda la información de las imágenes.
+
+## Etapa 3: Inteligencia Artificial y Auto-llenado
+- **Procesamiento de Texto (Gemini AI):** Implementación del SDK de Google Generative AI. Creación de un servicio asíncrono para estructurar el texto "crudo" de ML Kit a un formato JSON.
+- **Fallback de Regex:** Expresiones regulares creadas para una extracción instantánea de Monto y Fecha en lo que la IA procesa.
+- **Auto-llenado UI:** Lógica para actualizar los campos del formulario (Proveedor, Fecha, Total Amount) de manera automática tras la lectura.
+
+## Etapa 4: Expansión de Base de Datos e Integración con Sistema
+- **Actualización de Esquema (Room):** Se agregaron los campos `imagenUri`, `textoCrudo`, `linkFactura` y `correoDestino` a la base de datos con migración destructiva (v2).
+- **Visualización de Imágenes (Coil):** Uso de `AsyncImage` para visualizar el ticket escaneado original dentro de la pantalla de detalles.
+- **Envío de Correo Electrónico:** Implementación de botón con `Intent.ACTION_SENDTO` nativo para exportar y compartir los datos extraídos por correo.
+- **Prompt Avanzado:** Mejora radical en las instrucciones para la IA para extraer enlaces/URLs de portales de facturación, con validaciones robustas.
