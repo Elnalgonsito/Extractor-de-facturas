@@ -101,3 +101,16 @@ fun generarResumenLimpio(datos: InvoiceData, lineasEspaciado: Int = 1): String {
 
     return builder.toString().trimEnd()
 }
+
+fun formatearTicketLimpio(jsonIA: String?, lineasEspaciado: Int = 1): String {
+    if (jsonIA.isNullOrBlank()) {
+        return "Error al procesar los datos limpios"
+    }
+    return try {
+        val jsonParser = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+        val datos = jsonParser.decodeFromString<InvoiceData>(jsonIA)
+        generarResumenLimpio(datos, lineasEspaciado)
+    } catch (e: Exception) {
+        "Error al procesar los datos limpios"
+    }
+}

@@ -34,3 +34,6 @@
 ## Etapa 8: Refinamiento Estricto de Prompt
 - **Prompt API Estricta:** Modificación del prompt de Gemini para obligarlo a comportarse como una API estricta, removiendo etiquetas markdown y filtrando basura específica de tiendas.
 - **Reestructuración JSON:** División de fecha y hora, y conversión del campo de impuestos a una lista anidada de objetos detallando tipo y monto.
+
+## Etapa 9: Formateador Dinámico desde JSON
+- **Parsing Directo:** Creación de la función `formatearTicketLimpio` para aceptar directamente un String (JSON) extraído, validarlo/parsearlo, y generar el resumen dinámico. Manejo de excepciones integrado con mensaje de error controlado.
