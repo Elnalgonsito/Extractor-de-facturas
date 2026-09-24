@@ -232,16 +232,10 @@ fun InvoiceConfirmationScreen(
                         data = Uri.parse("mailto:")
                         putExtra(Intent.EXTRA_EMAIL, arrayOf(correoDestino))
                         putExtra(Intent.EXTRA_SUBJECT, "Datos de Facturación - $provider")
-                        val body = """
-                            Proveedor: $provider
-                            Fecha: $date
-                            Total: $total
-                            Link para facturar: $linkFactura
-                            
-                            Texto Original:
-                            $extractedText
-                        """.trimIndent()
-                        putExtra(Intent.EXTRA_TEXT, body)
+                        val emailBody = currentInvoiceData?.let {
+                            generarResumenLimpio(it, 2)
+                        } ?: extractedText.takeIf { it.isNotBlank() } ?: "Sin detalles."
+                        putExtra(Intent.EXTRA_TEXT, emailBody)
                     }
                     try {
                         context.startActivity(intent)

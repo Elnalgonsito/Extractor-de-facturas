@@ -27,3 +27,6 @@
 ## Etapa 6: Resumen Estructurado en UI
 - **Transformación de Datos:** Creación de la función `generarResumenLimpio` para convertir el objeto de datos complejo extraído por la IA en un String estructurado y legible con iteración de artículos.
 - **Limpieza de Interfaz:** Reemplazo del bloque de "Texto Crudo" (OCR) en la pantalla de detalles por un resumen limpio generado dinámicamente.
+
+## Etapa 7: Exportación Avanzada
+- **Correo Electrónico Dinámico:** Actualización del cuerpo del correo para inyectar directamente el resumen estructurado por la IA, utilizando un espaciado doble (`lineasEspaciado = 2`) para una presentación más formal.
