@@ -83,8 +83,8 @@ fun InvoiceConfirmationScreen(
             val parsedData = parser.parseInvoice(initialExtractedText)
             if (parsedData != null) {
                 if (!parsedData.proveedor.isNullOrBlank()) provider = parsedData.proveedor
-                if (!parsedData.fecha.isNullOrBlank()) date = parsedData.fecha
-                if (!parsedData.total.isNullOrBlank()) total = parsedData.total
+                if (!parsedData.fecha_hora.isNullOrBlank()) date = parsedData.fecha_hora
+                if (parsedData.total != null) total = parsedData.total.toString()
                 if (!parsedData.link_facturacion.isNullOrBlank()) linkFactura = parsedData.link_facturacion
             }
             isLoading = false

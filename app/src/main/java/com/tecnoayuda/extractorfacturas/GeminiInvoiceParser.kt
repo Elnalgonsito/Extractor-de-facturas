@@ -11,9 +11,22 @@ import android.util.Log
 @Serializable
 data class InvoiceData(
     val proveedor: String? = null,
-    val fecha: String? = null,
-    val total: String? = null,
+    val sucursal: String? = null,
+    val fecha_hora: String? = null,
+    val regimen_fiscal: String? = null,
+    val metodo_pago: String? = null,
+    val articulos: List<InvoiceItem>? = null,
+    val subtotal: Double? = null,
+    val impuestos: String? = null,
+    val total: Double? = null,
     val link_facturacion: String? = null
+)
+
+@Serializable
+data class InvoiceItem(
+    val cantidad: Double? = null,
+    val descripcion: String? = null,
+    val importe: Double? = null
 )
 
 class GeminiInvoiceParser {
@@ -30,7 +43,7 @@ class GeminiInvoiceParser {
 
     suspend fun parseInvoice(rawText: String): InvoiceData? = withContext(Dispatchers.IO) {
         try {
-            val prompt = "Eres un sistema experto analizando texto de tickets y facturas extraído por OCR. Tu tarea es encontrar 4 datos clave, incluso si hay ruido o errores de lectura. 1. proveedor (el nombre del negocio o emisor). 2. fecha (conviértela a formato YYYY-MM-DD). 3. total (el precio final cobrado, busca palabras como Total, Importe, Monto o signos de $). 4. link_facturacion (busca URLs, dominios web, www o palabras como portal/factura electronica). Devuelve ÚNICAMENTE un JSON válido con las claves: \"proveedor\", \"fecha\", \"total\", \"link_facturacion\". Si es absolutamente imposible encontrar un dato, su valor en el JSON debe ser null. Texto: $rawText"
+            val prompt = "Eres un analista de datos contables. Analiza este texto de OCR de un ticket. Ignora por completo encuestas, beneficios, puntos, anuncios y números de atención al cliente. Extrae solo la información de la compra y devuelve ÚNICAMENTE este formato JSON: {\"proveedor\": \"nombre\", \"sucursal\": \"lugar\", \"fecha_hora\": \"YYYY-MM-DD HH:MM\", \"regimen_fiscal\": \"código y descripción\", \"metodo_pago\": \"método e información\", \"articulos\": [{\"cantidad\": 0.0, \"descripcion\": \"nombre\", \"importe\": 0.0}], \"subtotal\": 0.0, \"impuestos\": \"detalle de tasas\", \"total\": 0.0, \"link_facturacion\": \"url\"}. Si falta algo, usa null. Texto: $rawText"
 
             val response = generativeModel.generateContent(prompt)
             val jsonString = response.text
