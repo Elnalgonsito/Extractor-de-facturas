@@ -30,3 +30,7 @@
 
 ## Etapa 7: Exportación Avanzada
 - **Correo Electrónico Dinámico:** Actualización del cuerpo del correo para inyectar directamente el resumen estructurado por la IA, utilizando un espaciado doble (`lineasEspaciado = 2`) para una presentación más formal.
+
+## Etapa 8: Refinamiento Estricto de Prompt
+- **Prompt API Estricta:** Modificación del prompt de Gemini para obligarlo a comportarse como una API estricta, removiendo etiquetas markdown y filtrando basura específica de tiendas.
+- **Reestructuración JSON:** División de fecha y hora, y conversión del campo de impuestos a una lista anidada de objetos detallando tipo y monto.

@@ -87,7 +87,7 @@ fun InvoiceConfirmationScreen(
             if (parsedData != null) {
                 currentInvoiceData = parsedData
                 if (!parsedData.proveedor.isNullOrBlank()) provider = parsedData.proveedor
-                if (!parsedData.fecha_hora.isNullOrBlank()) date = parsedData.fecha_hora
+                if (!parsedData.fecha.isNullOrBlank()) date = parsedData.fecha
                 if (parsedData.total != null) total = parsedData.total.toString()
                 if (!parsedData.link_facturacion.isNullOrBlank()) linkFactura = parsedData.link_facturacion
             }
