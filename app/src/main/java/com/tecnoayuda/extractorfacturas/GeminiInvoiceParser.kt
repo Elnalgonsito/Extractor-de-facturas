@@ -46,7 +46,11 @@ class GeminiInvoiceParser {
         }
     )
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json { 
+        ignoreUnknownKeys = true 
+        explicitNulls = false 
+        coerceInputValues = true 
+    }
 
     suspend fun parseInvoice(rawText: String): InvoiceData = withContext(Dispatchers.IO) {
         val prompt = "Eres una API estricta de extracción de datos contables. Tu única tarea es leer texto OCR, IGNORAR toda la basura (encuestas, www.miopinionwmx.com, beneficios, puntos, números 800, agradecimientos) y extraer solo los datos fiscales. Devuelve ÚNICAMENTE un JSON válido, sin etiquetas Markdown (sin ```json). Estructura obligatoria: { \"proveedor\": \"\", \"sucursal\": \"\", \"fecha\": \"YYYY-MM-DD\", \"hora\": \"HH:MM\", \"regimen_fiscal\": \"\", \"metodo_pago\": \"\", \"articulos\": [{\"cantidad\": 0.0, \"descripcion\": \"\", \"importe\": 0.0}], \"subtotal\": 0.0, \"impuestos\": [{\"tipo\": \"\", \"monto\": 0.0}], \"total\": 0.0, \"link_facturacion\": \"\" }. Si un dato no existe, pon null. Texto: $rawText"
@@ -100,7 +104,11 @@ fun formatearTicketLimpio(jsonIA: String?, lineasEspaciado: Int = 1): String {
         return "Error al procesar los datos limpios"
     }
     return try {
-        val jsonParser = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+        val jsonParser = kotlinx.serialization.json.Json { 
+            ignoreUnknownKeys = true 
+            explicitNulls = false 
+            coerceInputValues = true 
+        }
         val datos = jsonParser.decodeFromString<InvoiceData>(jsonIA)
         generarResumenLimpio(datos, lineasEspaciado)
     } catch (e: Exception) {

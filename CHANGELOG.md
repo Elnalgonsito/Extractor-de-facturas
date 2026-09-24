@@ -44,3 +44,6 @@
 ## Etapa 11: Manejo de Errores y Limpieza de Markdown
 - **Resiliencia en Parsing:** Implementación de `try-catch` en la corrutina de análisis para capturar errores de formato o red, actualizando proactivamente los campos de la UI con mensajes de error descriptivos.
 - **Sanitización de JSON:** Eliminación forzada de etiquetas Markdown (` ```json `) de la respuesta de Gemini antes del parseo para prevenir crashes silenciosos.
+
+## Etapa 12: Tolerancia a Nulos en Parsing JSON
+- **Robustez de Serialización:** Configuración avanzada de `kotlinx.serialization` (`explicitNulls = false`, `coerceInputValues = true`) para garantizar un parseo 100% tolerante a fallos. Si la IA omite arrays o devuelve campos incompletos, el sistema asignará nulos por defecto en lugar de lanzar excepciones, preservando los datos que sí fueron detectados.
