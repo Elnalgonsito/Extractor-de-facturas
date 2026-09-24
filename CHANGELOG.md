@@ -19,3 +19,7 @@
 - **Visualización de Imágenes (Coil):** Uso de `AsyncImage` para visualizar el ticket escaneado original dentro de la pantalla de detalles.
 - **Envío de Correo Electrónico:** Implementación de botón con `Intent.ACTION_SENDTO` nativo para exportar y compartir los datos extraídos por correo.
 - **Prompt Avanzado:** Mejora radical en las instrucciones para la IA para extraer enlaces/URLs de portales de facturación, con validaciones robustas.
+
+## Etapa 5: Extracción Contable Avanzada
+- **Prompt Contable (Gemini):** Refinamiento drástico del prompt para instruir a la IA a actuar como analista de datos contables. Filtrado automático de ruido (encuestas, puntos).
+- **Modelado Complejo de Datos:** Expansión de `InvoiceData` y creación de `InvoiceItem` para soportar estructura JSON compleja (sucursal, método de pago, régimen fiscal, desglose de artículos individuales, subtotal e impuestos).
