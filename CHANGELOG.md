@@ -50,3 +50,6 @@
 
 ## Etapa 13: Corrección de Alias de Modelo IA
 - **Resolución de Error 404:** Se actualizó el identificador del modelo generativo de `"gemini-1.5-flash"` a `"gemini-1.5-flash-latest"` para solucionar el error 404 (NOT_FOUND) provocado por la API v1beta del SDK de Google.
+
+## Etapa 14: Corrección de Alias de Modelo IA (Intento 2)
+- **Resolución de Error 404:** Se actualizó el identificador del modelo generativo a `"gemini-1.5-pro"` (y se preparó el fallback a `"gemini-pro"`) dado que la región o la versión de la API v1beta no soportaba los modelos flash.

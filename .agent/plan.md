@@ -113,13 +113,18 @@ Una aplicación nativa de Android para escanear y gestionar facturas. La pantall
   - UI displays the parsed results instead of the error message
 - **Duration:** 1h 40s
 
-### Task_12_ChangelogAndGit: Update CHANGELOG.md with the Gemini model fix details and push the code to the Git repository. Instruct critic_agent to run final verification to ensure build passes and app does not crash.
+### Task_13_UpdateModelToProAndGit: Change the model identifier in GeminiInvoiceParser.kt to 'gemini-1.5-pro'. Update CHANGELOG.md with the fix details and push the code to GitHub.
 - **Status:** IN_PROGRESS
 - **Acceptance Criteria:**
-  - CHANGELOG.md updated with fix details
-  - Code committed and pushed to GitHub
+  - Model updated to gemini-1.5-pro
+  - CHANGELOG.md updated
+  - Changes pushed to GitHub
+- **StartTime:** 2026-09-27 21:29:36 MST
+
+### Task_14_RunAndVerify: Run and verify application stability. Instruct critic_agent to verify application stability (no crashes), confirm alignment with user requirements, and report critical UI issues.
+- **Status:** PENDING
+- **Acceptance Criteria:**
   - make sure all existing tests pass
   - build pass
   - app does not crash
-- **StartTime:** 2026-09-24 11:21:23 MST
 
