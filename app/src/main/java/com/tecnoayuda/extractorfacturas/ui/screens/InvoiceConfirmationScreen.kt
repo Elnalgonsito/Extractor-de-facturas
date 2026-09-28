@@ -92,7 +92,14 @@ fun InvoiceConfirmationScreen(
                 if (parsedData.total != null) total = parsedData.total.toString()
                 if (!parsedData.link_facturacion.isNullOrBlank()) linkFactura = parsedData.link_facturacion
             } catch (e: Exception) {
-                val errorMsg = "Error de procesamiento: ${e.localizedMessage}"
+                val rawError = e.localizedMessage ?: ""
+                val errorMsg = when {
+                    rawError.contains("503") || rawError.contains("high demand") -> 
+                        "Los servidores de Google Gemini están saturados en este momento. Por favor, intenta de nuevo en unos minutos."
+                    rawError.contains("MissingFieldException") -> 
+                        "Error de comunicación con la API (Posible saturación). Intenta de nuevo más tarde."
+                    else -> "Error de procesamiento: $rawError"
+                }
                 provider = errorMsg
                 date = errorMsg
                 total = errorMsg

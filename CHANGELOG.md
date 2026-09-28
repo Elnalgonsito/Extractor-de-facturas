@@ -53,3 +53,7 @@
 
 ## Etapa 14: Corrección de Alias de Modelo IA (Intento 2)
 - **Resolución de Error 404:** Se actualizó el identificador del modelo generativo a `"gemini-1.5-pro"` (y se preparó el fallback a `"gemini-pro"`) dado que la región o la versión de la API v1beta no soportaba los modelos flash.
+
+## Etapa 15: Migración a Interactions API (Google GenAI)
+- **Actualización de SDK:** Se eliminó la librería `generativeai` (deprecada) y se integró el nuevo SDK oficial `com.google.genai:google-genai`.
+- **Nueva Infraestructura:** Se refactorizó la consulta de la IA utilizando `CreateModelInteraction` y `Client` para acceder al modelo `gemini-3.8-flash` y resolver las saturaciones e incompatibilidades del SDK anterior.
