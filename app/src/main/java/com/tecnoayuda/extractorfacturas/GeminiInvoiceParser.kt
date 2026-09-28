@@ -39,7 +39,7 @@ data class InvoiceItem(
 class GeminiInvoiceParser {
 
     private val generativeModel = GenerativeModel(
-        modelName = "gemini-1.5-flash",
+        modelName = "gemini-1.5-flash-latest",
         apiKey = BuildConfig.GEMINI_API_KEY,
         generationConfig = generationConfig {
             responseMimeType = "application/json"

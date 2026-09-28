@@ -47,3 +47,6 @@
 
 ## Etapa 12: Tolerancia a Nulos en Parsing JSON
 - **Robustez de Serialización:** Configuración avanzada de `kotlinx.serialization` (`explicitNulls = false`, `coerceInputValues = true`) para garantizar un parseo 100% tolerante a fallos. Si la IA omite arrays o devuelve campos incompletos, el sistema asignará nulos por defecto en lugar de lanzar excepciones, preservando los datos que sí fueron detectados.
+
+## Etapa 13: Corrección de Alias de Modelo IA
+- **Resolución de Error 404:** Se actualizó el identificador del modelo generativo de `"gemini-1.5-flash"` a `"gemini-1.5-flash-latest"` para solucionar el error 404 (NOT_FOUND) provocado por la API v1beta del SDK de Google.
