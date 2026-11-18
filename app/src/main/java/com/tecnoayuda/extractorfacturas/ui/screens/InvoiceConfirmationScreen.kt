@@ -46,7 +46,7 @@ import coil.compose.AsyncImage
 import com.tecnoayuda.extractorfacturas.GeminiInvoiceParser
 import com.tecnoayuda.extractorfacturas.InvoiceData
 import com.tecnoayuda.extractorfacturas.formatearTicketLimpio
-import com.tecnoayuda.extractorfacturas.utils.extraerDatosDelTicket
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,17 +81,18 @@ fun InvoiceConfirmationScreen(
     val parser = remember { GeminiInvoiceParser() }
     val context = LocalContext.current
 
-    LaunchedEffect(initialExtractedText) {
-        if (!initialExtractedText.isNullOrBlank()) {
+    LaunchedEffect(initialImagenUri) {
+        if (!initialImagenUri.isNullOrBlank()) {
             isLoading = true
-            // Regex fallback initially (optional)
-            val regexData = extraerDatosDelTicket(initialExtractedText)
-            if (date.isBlank() && regexData.date != null) date = regexData.date
-            if (total.isBlank() && regexData.total != null) total = regexData.total
             
             try {
+                val uri = android.net.Uri.parse(initialImagenUri)
+                val bitmap = android.graphics.ImageDecoder.decodeBitmap(
+                    android.graphics.ImageDecoder.createSource(context.contentResolver, uri)
+                )
+                
                 // AI parsing
-                val parsedData = parser.parseInvoice(initialExtractedText)
+                val parsedData = parser.parseInvoice(bitmap)
                 currentInvoiceData = parsedData
                 if (!parsedData.proveedor.isNullOrBlank()) provider = parsedData.proveedor
                 if (!parsedData.fecha.isNullOrBlank()) date = parsedData.fecha

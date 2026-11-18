@@ -26,12 +26,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.tecnoayuda.extractorfacturas.data.local.Invoice
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,18 +38,9 @@ fun InvoiceListScreen(
     onInvoiceClick: (Invoice) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
-            val image = InputImage.fromFilePath(context, uri)
-            val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-            recognizer.process(image)
-                .addOnSuccessListener { visionText ->
-                    onAddInvoiceClick(visionText.text, uri.toString())
-                }
-                .addOnFailureListener {
-                    onAddInvoiceClick(null, uri.toString())
-                }
+            onAddInvoiceClick("", uri.toString())
         }
     }
 

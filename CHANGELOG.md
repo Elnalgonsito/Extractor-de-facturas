@@ -61,3 +61,7 @@
 ## Etapa 16: Desglose y Cálculo Automático de Impuestos
 - **Cálculo de IVA e IEPS:** Se modificó el prompt de la Inteligencia Artificial para forzar matemáticamente el cálculo de IVA (16%) e IEPS (8%) en caso de que el ticket original no los incluya explícitamente.
 - **Campos en Base de Datos y UI:** Se actualizó la entidad `Invoice` de Room (versión 3) añadiendo `subtotal`, `iva`, e `ieps`. Se agregaron los campos editables correspondientes en la pantalla de detalles.
+
+## Etapa 17: Migración a Gemini Vision (Fin de ML Kit)
+- **Eliminación de OCR Local:** Se eliminó la dependencia de Google ML Kit Text Recognition por su incapacidad para procesar documentos densos.
+- **Gemini Vision (Multimodal):** Se migró la arquitectura para enviar la imagen original (Bitmap) directamente al modelo `gemini-1.5-pro` a través del SDK `generativeai`, permitiendo que la IA utilice su capacidad visual para extraer el JSON estructural con una precisión superior.

@@ -1,11 +1,8 @@
 package com.tecnoayuda.extractorfacturas
 
-import com.google.genai.Client
-import com.google.genai.gaos.models.interactions.CreateModelInteraction
-import com.google.genai.gaos.models.interactions.InteractionsInput
-import com.google.genai.gaos.models.interactions.Model
-import com.google.genai.gaos.models.operations.CreateInteractionRequestBody
-import com.google.genai.gaos.models.interactions.Interaction
+import android.graphics.Bitmap
+import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -50,22 +47,21 @@ class GeminiInvoiceParser {
         coerceInputValues = true 
     }
 
-    suspend fun parseInvoice(rawText: String): InvoiceData = withContext(Dispatchers.IO) {
-        val prompt = "Eres una API estricta de extracción de datos contables. Tu única tarea es leer texto OCR, IGNORAR toda la basura (encuestas, www.miopinionwmx.com, beneficios, puntos, números 800, agradecimientos) y extraer solo los datos fiscales. Devuelve ÚNICAMENTE un JSON válido, sin etiquetas Markdown (sin ```json). Estructura obligatoria: { \"proveedor\": \"\", \"sucursal\": \"\", \"fecha\": \"YYYY-MM-DD\", \"hora\": \"HH:MM\", \"regimen_fiscal\": \"\", \"metodo_pago\": \"\", \"articulos\": [{\"cantidad\": 0.0, \"descripcion\": \"\", \"importe\": 0.0}], \"subtotal\": 0.0, \"iva\": 0.0, \"ieps\": 0.0, \"total\": 0.0, \"link_facturacion\": \"\" }. REGLA MUY IMPORTANTE: Si el ticket no detalla explícitamente el IVA (16%) o el IEPS (8%), DEBES calcularlos matemáticamente a partir del total o subtotal asumiendo esas tasas. Si un dato no existe y no es calculable, pon null. Texto: $rawText"
+    suspend fun parseInvoice(bitmap: Bitmap): InvoiceData = withContext(Dispatchers.IO) {
+        val prompt = "Eres una API estricta de extracción de datos contables. Analiza la imagen adjunta de este ticket. IGNORAR toda la basura (encuestas, www.miopinionwmx.com, beneficios, puntos, números 800, agradecimientos) y extraer solo los datos fiscales. Devuelve ÚNICAMENTE un JSON válido, sin etiquetas Markdown (sin ```json). Estructura obligatoria: { \"proveedor\": \"\", \"sucursal\": \"\", \"fecha\": \"YYYY-MM-DD\", \"hora\": \"HH:MM\", \"regimen_fiscal\": \"\", \"metodo_pago\": \"\", \"articulos\": [{\"cantidad\": 0.0, \"descripcion\": \"\", \"importe\": 0.0}], \"subtotal\": 0.0, \"iva\": 0.0, \"ieps\": 0.0, \"total\": 0.0, \"link_facturacion\": \"\" }. REGLA MUY IMPORTANTE: Si el ticket no detalla explícitamente el IVA (16%) o el IEPS (8%), DEBES calcularlos matemáticamente a partir del total o subtotal asumiendo esas tasas. Si un dato no existe y no es calculable, pon null."
 
-        val client = Client.builder().apiKey(BuildConfig.GEMINI_API_KEY).build()
+        val generativeModel = GenerativeModel(
+            modelName = "gemini-1.5-pro",
+            apiKey = BuildConfig.GEMINI_API_KEY
+        )
 
-        val params = CreateModelInteraction.builder()
-            .model(Model.of("gemini-3.8-flash"))
-            .input(InteractionsInput.of(prompt))
-            .build()
-
-        val interaction = client.interactions.create(CreateInteractionRequestBody.of(params)).interaction().get()
-        android.util.Log.d("GeminiParser", "Raw interaction: " + interaction.toString())
-
-        val jsonString = interaction.outputText().orElse(null)
+        val response = generativeModel.generateContent(content {
+            image(bitmap)
+            text(prompt)
+        })
+        val jsonString = response.text
         if (jsonString == null) {
-            throw Exception("Respuesta de IA nula. Interaction data: " + interaction.toString())
+            throw Exception("Respuesta de IA nula. Response: $response")
         }
         
         val jsonLimpio = jsonString.replace("```json", "").replace("```", "").trim()

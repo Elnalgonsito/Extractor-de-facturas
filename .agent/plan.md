@@ -149,11 +149,18 @@ Una aplicación nativa de Android para escanear y gestionar facturas. La pantall
   - app does not crash
 - **Duration:** 1h 3s
 
-### Task_17_VerifyGeminiInteractionsApi: Instruct critic_agent to run the application on an emulator and verify that the newly implemented com.google.genai Interactions API works correctly. Verify that it successfully extracts and displays invoice data, the UI properly displays the formatted ticket summary, and the app does not crash.
+### Task_20_MigrateToGeminiVision: Remove ML Kit from build.gradle.kts. Refactor InvoiceListScreen to pass Image URI to Confirmation Screen instead of running OCR. Refactor GeminiInvoiceParser to accept a Bitmap/Uri and use the google-genai SDK to parse structured JSON. Update InvoiceConfirmationScreen. Update CHANGELOG.
 - **Status:** IN_PROGRESS
 - **Acceptance Criteria:**
-  - App builds and launches without crashes
-  - The OCR text extraction and new Gemini Interactions API return the structured JSON
-  - The UI properly displays the formatted ticket summary
-- **StartTime:** 2026-09-27 22:01:19 MST
+  - ML Kit dependency removed
+  - Gemini SDK processes Bitmap directly
+  - CHANGELOG updated
+- **StartTime:** 2026-11-18 14:59:01 MST
+
+### Task_21_RunAndVerify: Run and verify application stability. Instruct critic_agent to verify application stability (no crashes), confirm alignment with user requirements, and report critical UI issues.
+- **Status:** PENDING
+- **Acceptance Criteria:**
+  - make sure all existing tests pass
+  - build pass
+  - app does not crash
 

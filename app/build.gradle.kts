@@ -95,8 +95,8 @@ dependencies {
     implementation(libs.moshi.kotlin)
     implementation(libs.okhttp)
     implementation(libs.play.services.location)
-    implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.0")
     implementation(libs.retrofit)
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
     testImplementation(libs.androidx.core)
     testImplementation(libs.androidx.junit)
     testImplementation(libs.junit)
@@ -108,8 +108,6 @@ dependencies {
     androidTestImplementation(libs.androidx.runner)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    implementation("com.google.genai:google-genai:1.73.0")
-    implementation("com.google.genai:google-genai-kotlin:1.2.0")
     "ksp"(libs.androidx.room.compiler)
     "ksp"(libs.moshi.kotlin.codegen)
 }
