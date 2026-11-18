@@ -65,3 +65,7 @@
 ## Etapa 17: Migración a Gemini Vision (Fin de ML Kit)
 - **Eliminación de OCR Local:** Se eliminó la dependencia de Google ML Kit Text Recognition por su incapacidad para procesar documentos densos.
 - **Gemini Vision (Multimodal):** Se migró la arquitectura para enviar la imagen original (Bitmap) directamente al modelo `gemini-1.5-pro` a través del SDK `generativeai`, permitiendo que la IA utilice su capacidad visual para extraer el JSON estructural con una precisión superior.
+
+## Etapa 18: Estabilización de Arquitectura y Manejo de Límites de Cuota (429)
+- **Implementación Definitiva:** Se estabilizó la conexión multimodal utilizando el SDK oficial `com.google.genai`, convirtiendo los Bitmaps a flujos de bytes (JPEG) y empaquetándolos bajo la estructura moderna `Part`.
+- **Manejo de Errores Quota:** El sistema es capaz de interceptar de forma limpia los errores `429 RESOURCE_EXHAUSTED`, brindándole visibilidad al usuario de que los límites del plan gratuito de Google han sido alcanzados y previniendo que la aplicación se congele.

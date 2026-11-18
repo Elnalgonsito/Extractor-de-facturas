@@ -1,8 +1,11 @@
 package com.tecnoayuda.extractorfacturas
 
 import android.graphics.Bitmap
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.content
+import com.google.genai.Client
+
+import com.google.genai.types.Content
+import com.google.genai.types.Part
+import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -50,20 +53,43 @@ class GeminiInvoiceParser {
     suspend fun parseInvoice(bitmap: Bitmap): InvoiceData = withContext(Dispatchers.IO) {
         val prompt = "Eres una API estricta de extracción de datos contables. Analiza la imagen adjunta de este ticket. IGNORAR toda la basura (encuestas, www.miopinionwmx.com, beneficios, puntos, números 800, agradecimientos) y extraer solo los datos fiscales. Devuelve ÚNICAMENTE un JSON válido, sin etiquetas Markdown (sin ```json). Estructura obligatoria: { \"proveedor\": \"\", \"sucursal\": \"\", \"fecha\": \"YYYY-MM-DD\", \"hora\": \"HH:MM\", \"regimen_fiscal\": \"\", \"metodo_pago\": \"\", \"articulos\": [{\"cantidad\": 0.0, \"descripcion\": \"\", \"importe\": 0.0}], \"subtotal\": 0.0, \"iva\": 0.0, \"ieps\": 0.0, \"total\": 0.0, \"link_facturacion\": \"\" }. REGLA MUY IMPORTANTE: Si el ticket no detalla explícitamente el IVA (16%) o el IEPS (8%), DEBES calcularlos matemáticamente a partir del total o subtotal asumiendo esas tasas. Si un dato no existe y no es calculable, pon null."
 
-        val generativeModel = GenerativeModel(
-            modelName = "gemini-1.5-pro",
-            apiKey = BuildConfig.GEMINI_API_KEY
-        )
-
-        val response = generativeModel.generateContent(content {
-            image(bitmap)
-            text(prompt)
-        })
-        val jsonString = response.text
-        if (jsonString == null) {
-            throw Exception("Respuesta de IA nula. Response: $response")
+        // Scale bitmap to max 1024 pixels on its longest side
+        val maxDim = 1024
+        val scale = Math.min(maxDim.toFloat() / bitmap.width, maxDim.toFloat() / bitmap.height)
+        val scaledBitmap = if (scale < 1) {
+            android.graphics.Bitmap.createScaledBitmap(
+                bitmap, 
+                (bitmap.width * scale).toInt(), 
+                (bitmap.height * scale).toInt(), 
+                true
+            )
+        } else {
+            bitmap
         }
+
+        // Convert scaledBitmap to byte array (PNG or JPEG)
+        val stream = ByteArrayOutputStream()
+        scaledBitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 80, stream)
+        val byteArray = stream.toByteArray()
+
+        val client = Client.builder().apiKey(BuildConfig.GEMINI_API_KEY).build()
         
+        // Create parts
+        val textPart = Part.builder().text(prompt).build()
+        val imagePart = Part.builder().inlineData(
+            com.google.genai.types.Blob.builder().mimeType("image/jpeg").data(byteArray).build()
+        ).build()
+        
+        val content = Content.builder().parts(listOf(imagePart, textPart)).build()
+        
+        // Call the correct, modern API
+        val response = client.models.generateContent(
+            "gemini-3.8-flash",
+            content,
+            null
+        )
+        
+        val jsonString = response.text() ?: throw Exception("Respuesta de IA nula")
         val jsonLimpio = jsonString.replace("```json", "").replace("```", "").trim()
         
         return@withContext json.decodeFromString<InvoiceData>(jsonLimpio)
