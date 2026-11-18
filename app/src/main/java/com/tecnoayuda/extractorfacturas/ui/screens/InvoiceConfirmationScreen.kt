@@ -56,15 +56,21 @@ fun InvoiceConfirmationScreen(
     initialProvider: String = "",
     initialDate: String = "",
     initialTotal: String = "",
+    initialSubtotal: String = "",
+    initialIva: String = "",
+    initialIeps: String = "",
     initialLinkFactura: String? = null,
     initialCorreoDestino: String? = null,
     modifier: Modifier = Modifier,
-    onSaveClick: (provider: String, date: String, total: String, linkFactura: String?, correoDestino: String?, imagenUri: String?, textoCrudo: String?) -> Unit,
+    onSaveClick: (provider: String, date: String, total: String, subtotal: String, iva: String, ieps: String, linkFactura: String?, correoDestino: String?, imagenUri: String?, textoCrudo: String?) -> Unit,
     onBackClick: () -> Unit
 ) {
     var provider by remember(initialProvider) { mutableStateOf(initialProvider) }
     var date by remember(initialDate) { mutableStateOf(initialDate) }
     var total by remember(initialTotal) { mutableStateOf(initialTotal) }
+    var subtotal by remember(initialSubtotal) { mutableStateOf(initialSubtotal) }
+    var iva by remember(initialIva) { mutableStateOf(initialIva) }
+    var ieps by remember(initialIeps) { mutableStateOf(initialIeps) }
     var linkFactura by remember(initialLinkFactura) { mutableStateOf(initialLinkFactura ?: "") }
     var correoDestino by remember(initialCorreoDestino) { mutableStateOf(initialCorreoDestino ?: "") }
     var isLoading by remember { mutableStateOf(false) }
@@ -90,6 +96,9 @@ fun InvoiceConfirmationScreen(
                 if (!parsedData.proveedor.isNullOrBlank()) provider = parsedData.proveedor
                 if (!parsedData.fecha.isNullOrBlank()) date = parsedData.fecha
                 if (parsedData.total != null) total = parsedData.total.toString()
+                if (parsedData.subtotal != null) subtotal = parsedData.subtotal.toString()
+                if (parsedData.iva != null) iva = parsedData.iva.toString()
+                if (parsedData.ieps != null) ieps = parsedData.ieps.toString()
                 if (!parsedData.link_facturacion.isNullOrBlank()) linkFactura = parsedData.link_facturacion
             } catch (e: Exception) {
                 val rawError = e.localizedMessage ?: ""
@@ -179,6 +188,39 @@ fun InvoiceConfirmationScreen(
             )
 
             OutlinedTextField(
+                value = subtotal,
+                onValueChange = { subtotal = it },
+                label = { Text("Subtotal") },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Rounded.AttachMoney, contentDescription = null)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large
+            )
+
+            OutlinedTextField(
+                value = iva,
+                onValueChange = { iva = it },
+                label = { Text("IVA") },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Rounded.AttachMoney, contentDescription = null)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large
+            )
+
+            OutlinedTextField(
+                value = ieps,
+                onValueChange = { ieps = it },
+                label = { Text("IEPS") },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Rounded.AttachMoney, contentDescription = null)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large
+            )
+
+            OutlinedTextField(
                 value = total,
                 onValueChange = { total = it },
                 label = { Text("Total Amount") },
@@ -225,6 +267,9 @@ fun InvoiceConfirmationScreen(
                         provider,
                         date,
                         total,
+                        subtotal,
+                        iva,
+                        ieps,
                         linkFactura.takeIf { it.isNotBlank() },
                         correoDestino.takeIf { it.isNotBlank() },
                         initialImagenUri,
@@ -279,7 +324,7 @@ fun InvoiceConfirmationScreen(
 fun InvoiceConfirmationScreenPreview() {
     MaterialTheme {
         InvoiceConfirmationScreen(
-            onSaveClick = { _, _, _, _, _, _, _ -> },
+            onSaveClick = { _, _, _, _, _, _, _, _, _, _ -> },
             onBackClick = {}
         )
     }

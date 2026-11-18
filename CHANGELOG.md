@@ -57,3 +57,7 @@
 ## Etapa 15: Migración a Interactions API (Google GenAI)
 - **Actualización de SDK:** Se eliminó la librería `generativeai` (deprecada) y se integró el nuevo SDK oficial `com.google.genai:google-genai`.
 - **Nueva Infraestructura:** Se refactorizó la consulta de la IA utilizando `CreateModelInteraction` y `Client` para acceder al modelo `gemini-3.8-flash` y resolver las saturaciones e incompatibilidades del SDK anterior.
+
+## Etapa 16: Desglose y Cálculo Automático de Impuestos
+- **Cálculo de IVA e IEPS:** Se modificó el prompt de la Inteligencia Artificial para forzar matemáticamente el cálculo de IVA (16%) e IEPS (8%) en caso de que el ticket original no los incluya explícitamente.
+- **Campos en Base de Datos y UI:** Se actualizó la entidad `Invoice` de Room (versión 3) añadiendo `subtotal`, `iva`, e `ieps`. Se agregaron los campos editables correspondientes en la pantalla de detalles.

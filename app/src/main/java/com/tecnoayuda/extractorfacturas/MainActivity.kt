@@ -93,7 +93,7 @@ fun AppNavigation() {
                 InvoiceConfirmationScreen(
                     initialExtractedText = route.extractedText,
                     initialImagenUri = route.imagenUri,
-                    onSaveClick = { provider, date, total, linkFactura, correoDestino, imagenUri, textoCrudo ->
+                    onSaveClick = { provider, date, total, subtotal, iva, ieps, linkFactura, correoDestino, imagenUri, textoCrudo ->
                         viewModel.saveInvoice(
                             date = date,
                             provider = provider,
@@ -101,7 +101,10 @@ fun AppNavigation() {
                             imagenUri = imagenUri,
                             textoCrudo = textoCrudo,
                             linkFactura = linkFactura,
-                            correoDestino = correoDestino
+                            correoDestino = correoDestino,
+                            subtotal = subtotal.toDoubleOrNull(),
+                            iva = iva.toDoubleOrNull(),
+                            ieps = ieps.toDoubleOrNull()
                         )
                         backStack.removeLastOrNull()
                     },
@@ -119,9 +122,12 @@ fun AppNavigation() {
                     initialProvider = invoice?.provider ?: "",
                     initialDate = invoice?.date ?: "",
                     initialTotal = invoice?.totalAmount?.toString() ?: "",
+                    initialSubtotal = invoice?.subtotal?.toString() ?: "",
+                    initialIva = invoice?.iva?.toString() ?: "",
+                    initialIeps = invoice?.ieps?.toString() ?: "",
                     initialLinkFactura = invoice?.linkFactura,
                     initialCorreoDestino = invoice?.correoDestino,
-                    onSaveClick = { provider, date, total, linkFactura, correoDestino, imagenUri, textoCrudo ->
+                    onSaveClick = { provider, date, total, subtotal, iva, ieps, linkFactura, correoDestino, imagenUri, textoCrudo ->
                         // Since we don't have an update mechanism yet, we can just save as a new or ignore.
                         viewModel.saveInvoice(
                             date = date,
@@ -130,7 +136,10 @@ fun AppNavigation() {
                             imagenUri = imagenUri,
                             textoCrudo = textoCrudo,
                             linkFactura = linkFactura,
-                            correoDestino = correoDestino
+                            correoDestino = correoDestino,
+                            subtotal = subtotal.toDoubleOrNull(),
+                            iva = iva.toDoubleOrNull(),
+                            ieps = ieps.toDoubleOrNull()
                         )
                         backStack.removeLastOrNull()
                     },

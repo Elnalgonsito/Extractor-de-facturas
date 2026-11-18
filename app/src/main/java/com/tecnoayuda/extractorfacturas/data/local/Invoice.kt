@@ -13,5 +13,8 @@ data class Invoice(
     val imagenUri: String? = null,
     val textoCrudo: String? = null,
     val linkFactura: String? = null,
-    val correoDestino: String? = null
+    val correoDestino: String? = null,
+    val subtotal: Double? = null,
+    val iva: Double? = null,
+    val ieps: Double? = null
 )

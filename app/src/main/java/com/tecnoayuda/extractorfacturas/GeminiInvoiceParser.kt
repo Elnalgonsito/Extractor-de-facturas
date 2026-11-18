@@ -22,6 +22,8 @@ data class InvoiceData(
     val metodo_pago: String? = null,
     val articulos: List<InvoiceItem>? = null,
     val subtotal: Double? = null,
+    val iva: Double? = null,
+    val ieps: Double? = null,
     val impuestos: List<InvoiceTax>? = null,
     val total: Double? = null,
     val link_facturacion: String? = null
@@ -49,7 +51,7 @@ class GeminiInvoiceParser {
     }
 
     suspend fun parseInvoice(rawText: String): InvoiceData = withContext(Dispatchers.IO) {
-        val prompt = "Eres una API estricta de extracción de datos contables. Tu única tarea es leer texto OCR, IGNORAR toda la basura (encuestas, www.miopinionwmx.com, beneficios, puntos, números 800, agradecimientos) y extraer solo los datos fiscales. Devuelve ÚNICAMENTE un JSON válido, sin etiquetas Markdown (sin ```json). Estructura obligatoria: { \"proveedor\": \"\", \"sucursal\": \"\", \"fecha\": \"YYYY-MM-DD\", \"hora\": \"HH:MM\", \"regimen_fiscal\": \"\", \"metodo_pago\": \"\", \"articulos\": [{\"cantidad\": 0.0, \"descripcion\": \"\", \"importe\": 0.0}], \"subtotal\": 0.0, \"impuestos\": [{\"tipo\": \"\", \"monto\": 0.0}], \"total\": 0.0, \"link_facturacion\": \"\" }. Si un dato no existe, pon null. Texto: $rawText"
+        val prompt = "Eres una API estricta de extracción de datos contables. Tu única tarea es leer texto OCR, IGNORAR toda la basura (encuestas, www.miopinionwmx.com, beneficios, puntos, números 800, agradecimientos) y extraer solo los datos fiscales. Devuelve ÚNICAMENTE un JSON válido, sin etiquetas Markdown (sin ```json). Estructura obligatoria: { \"proveedor\": \"\", \"sucursal\": \"\", \"fecha\": \"YYYY-MM-DD\", \"hora\": \"HH:MM\", \"regimen_fiscal\": \"\", \"metodo_pago\": \"\", \"articulos\": [{\"cantidad\": 0.0, \"descripcion\": \"\", \"importe\": 0.0}], \"subtotal\": 0.0, \"iva\": 0.0, \"ieps\": 0.0, \"total\": 0.0, \"link_facturacion\": \"\" }. REGLA MUY IMPORTANTE: Si el ticket no detalla explícitamente el IVA (16%) o el IEPS (8%), DEBES calcularlos matemáticamente a partir del total o subtotal asumiendo esas tasas. Si un dato no existe y no es calculable, pon null. Texto: $rawText"
 
         val client = Client.builder().apiKey(BuildConfig.GEMINI_API_KEY).build()
 
@@ -59,7 +61,12 @@ class GeminiInvoiceParser {
             .build()
 
         val interaction = client.interactions.create(CreateInteractionRequestBody.of(params)).interaction().get()
-        val jsonString = interaction.outputText().orElse(null) ?: throw Exception("Respuesta de IA nula")
+        android.util.Log.d("GeminiParser", "Raw interaction: " + interaction.toString())
+
+        val jsonString = interaction.outputText().orElse(null)
+        if (jsonString == null) {
+            throw Exception("Respuesta de IA nula. Interaction data: " + interaction.toString())
+        }
         
         val jsonLimpio = jsonString.replace("```json", "").replace("```", "").trim()
         
@@ -88,6 +95,8 @@ fun generarResumenLimpio(datos: InvoiceData, lineasEspaciado: Int = 1): String {
     }
 
     datos.subtotal?.let { builder.append("Subtotal: $$it").append(space) }
+    datos.iva?.let { builder.append("IVA: $$it").append(space) }
+    datos.ieps?.let { builder.append("IEPS: $$it").append(space) }
     if (!datos.impuestos.isNullOrEmpty()) {
         builder.append("Impuestos:").append(space)
         datos.impuestos.forEach { imp ->

@@ -28,7 +28,10 @@ class InvoiceViewModel(
         imagenUri: String?,
         textoCrudo: String?,
         linkFactura: String?,
-        correoDestino: String?
+        correoDestino: String?,
+        subtotal: Double?,
+        iva: Double?,
+        ieps: Double?
     ) {
         val invoice = Invoice(
             date = date,
@@ -37,7 +40,10 @@ class InvoiceViewModel(
             imagenUri = imagenUri,
             textoCrudo = textoCrudo,
             linkFactura = linkFactura,
-            correoDestino = correoDestino
+            correoDestino = correoDestino,
+            subtotal = subtotal,
+            iva = iva,
+            ieps = ieps
         )
         viewModelScope.launch {
             repository.insertInvoice(invoice)
