@@ -83,3 +83,7 @@
 ## Etapa 22: Resolución Definitiva de Cuotas y Modelos (Auto-Reintento)
 - **Fijación de Modelo Forzoso:** Se fijó el modelo a `gemini-3.8-flash` de manera definitiva, ya que Google bloqueó el acceso a modelos antiguos para cuentas nuevas en el SDK de Interactions.
 - **Algoritmo de Auto-Reintento (Backoff):** Para lidiar con el estricto candado gratuito de "5 peticiones por minuto" (Error 429) y saturaciones (Error 503), se implementó un ciclo de auto-reintento inteligente. Si la IA rechaza la conexión, la aplicación pausa silenciosamente durante 32 segundos y lo vuelve a intentar automáticamente hasta 3 veces antes de arrojar un error, garantizando que la extracción se logre sin frustrar al usuario.
+
+## Etapa 23: Pivote a Groq (LLaVA Vision)
+- **Reemplazo de Motor IA:** Debido a las extremas restricciones del plan gratuito de Google Gemini, se eliminaron todas las dependencias de Google GenAI y se construyó un cliente HTTP nativo con `OkHttp`.
+- **Integración de Groq:** La aplicación ahora se comunica directamente con la API de Groq, utilizando su modelo multimodal de código abierto `llama-3.2-11b-vision-preview`, procesando las imágenes codificadas en Base64 de forma ultra-rápida y evitando por completo los errores 429.

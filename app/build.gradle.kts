@@ -30,6 +30,7 @@ android {
         
         val apiKey = localProperties.getProperty("GEMINI_API_KEY")?.removeSurrounding("\"") ?: ""
         buildConfigField("String", "GEMINI_API_KEY", "\"$apiKey\"")
+        buildConfigField("String", "GROQ_API_KEY", "\"${project.findProperty("GROQ_API_KEY") ?: localProperties.getProperty("GROQ_API_KEY")}\"")
     }
 
     buildTypes {
@@ -93,10 +94,9 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.material)
     implementation(libs.moshi.kotlin)
-    implementation(libs.okhttp)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation(libs.play.services.location)
     implementation(libs.retrofit)
-    implementation(libs.google.genai)
     testImplementation(libs.androidx.core)
     testImplementation(libs.androidx.junit)
     testImplementation(libs.junit)

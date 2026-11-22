@@ -76,7 +76,7 @@ fun InvoiceConfirmationScreen(
     var isLoading by remember { mutableStateOf(false) }
     var extractedText by remember(initialExtractedText) { mutableStateOf(initialExtractedText ?: "") }
     var currentInvoiceData by remember { mutableStateOf<InvoiceData?>(null) }
-    var parsingStatus by remember { mutableStateOf("Esperando análisis de Inteligencia Artificial...\n(Esto puede tardar hasta 40 segundos por límites del servidor gratuito)") }
+    var parsingStatus by remember { mutableStateOf("Analizando con Groq Vision...") }
 
     val parser = remember { GeminiInvoiceParser() }
     val context = LocalContext.current
@@ -109,7 +109,7 @@ fun InvoiceConfirmationScreen(
                 val rawError = e.localizedMessage ?: e.javaClass.simpleName
                 val errorMsg = when {
                     rawError.contains("503") || rawError.contains("high demand") -> 
-                        "Los servidores de Google Gemini están saturados en este momento. Por favor, intenta de nuevo en unos minutos."
+                        "Los servidores de Groq están saturados en este momento. Por favor, intenta de nuevo en unos minutos."
                     rawError.contains("MissingFieldException") -> 
                         "Error de comunicación con la API (Posible saturación). Intenta de nuevo más tarde."
                     else -> "Error de procesamiento: $rawError"

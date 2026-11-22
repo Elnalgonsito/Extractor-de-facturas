@@ -1,16 +1,19 @@
 package com.tecnoayuda.extractorfacturas
 
 import android.graphics.Bitmap
-import com.google.genai.Client
-
-import com.google.genai.types.Content
-import com.google.genai.types.Part
-import java.io.ByteArrayOutputStream
+import android.util.Base64
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import android.util.Log
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.util.concurrent.TimeUnit
 
 @Serializable
 data class InvoiceData(
@@ -44,68 +47,113 @@ data class InvoiceItem(
 
 class GeminiInvoiceParser {
 
-    private val json = Json { 
-        ignoreUnknownKeys = true 
-        explicitNulls = false 
-        coerceInputValues = true 
-    }
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .build()
 
     suspend fun parseInvoice(bitmap: Bitmap): InvoiceData = withContext(Dispatchers.IO) {
-        val prompt = "Eres una API estricta de extracción de datos contables. Analiza la imagen adjunta de este ticket. IGNORAR toda la basura (encuestas, www.miopinionwmx.com, beneficios, puntos, números 800, agradecimientos) y extraer solo los datos fiscales. Devuelve ÚNICAMENTE un JSON válido, sin etiquetas Markdown (sin ```json). Estructura obligatoria: { \"proveedor\": \"\", \"sucursal\": \"\", \"fecha\": \"YYYY-MM-DD\", \"hora\": \"HH:MM\", \"regimen_fiscal\": \"\", \"metodo_pago\": \"\", \"articulos\": [{\"cantidad\": 0.0, \"descripcion\": \"\", \"importe\": 0.0}], \"subtotal\": 0.0, \"iva\": 0.0, \"ieps\": 0.0, \"total\": 0.0, \"link_facturacion\": \"\" }. REGLA MUY IMPORTANTE: Si el ticket no detalla explícitamente el IVA (16%) o el IEPS (8%), DEBES calcularlos matemáticamente a partir del total o subtotal asumiendo esas tasas. Si un dato no existe y no es calculable, pon null."
+        val promptText = """
+            Eres una API estricta de extracción de datos contables de tickets y facturas.
+            Tu única tarea es extraer la información solicitada de la imagen y devolverla EXCLUSIVAMENTE en formato JSON.
+            No debes incluir saludos, explicaciones, ni etiquetas de código (como ```json o ```).
+            
+            Estructura JSON requerida:
+            {
+                "proveedor": "Nombre del emisor",
+                "sucursal": "Nombre o dirección de la sucursal",
+                "fecha": "Fecha de emisión en formato YYYY-MM-DD",
+                "hora": "Hora de emisión en formato HH:MM:SS",
+                "regimen_fiscal": "Régimen fiscal (si aplica)",
+                "metodo_pago": "Método de pago (efectivo, tarjeta, etc.)",
+                "articulos": [
+                    {
+                        "cantidad": 1.0,
+                        "descripcion": "Descripción del producto o servicio",
+                        "importe": 100.0
+                    }
+                ],
+                "subtotal": 100.0,
+                "iva": 16.0,
+                "ieps": 0.0,
+                "impuestos": [
+                    {
+                        "tipo": "IVA",
+                        "monto": 16.0
+                    }
+                ],
+                "total": 116.0,
+                "link_facturacion": "URL para facturar (si existe)"
+            }
+            
+            Si un dato no existe, déjalo como null (o [] para listas).
+            Asegúrate de que los valores numéricos sean de tipo número y no cadenas.
+        """.trimIndent()
 
-        // Scale bitmap to max 1024 pixels on its longest side
+        // Scale and compress
         val maxDim = 1024
         val scale = Math.min(maxDim.toFloat() / bitmap.width, maxDim.toFloat() / bitmap.height)
-        val scaledBitmap = if (scale < 1) {
-            android.graphics.Bitmap.createScaledBitmap(
-                bitmap, 
-                (bitmap.width * scale).toInt(), 
-                (bitmap.height * scale).toInt(), 
-                true
-            )
-        } else {
-            bitmap
-        }
-
-        // Convert scaledBitmap to byte array (PNG or JPEG)
+        val scaled = if (scale < 1) Bitmap.createScaledBitmap(
+            bitmap,
+            (bitmap.width * scale).toInt(),
+            (bitmap.height * scale).toInt(),
+            true
+        ) else bitmap
         val stream = ByteArrayOutputStream()
-        scaledBitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 80, stream)
-        val byteArray = stream.toByteArray()
+        scaled.compress(Bitmap.CompressFormat.JPEG, 80, stream)
+        val base64Image = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
 
-        val client = Client.builder().apiKey(BuildConfig.GEMINI_API_KEY).build()
-        
-        // Create parts
-        val textPart = Part.builder().text(prompt).build()
-        val imagePart = Part.builder().inlineData(
-            com.google.genai.types.Blob.builder().mimeType("image/jpeg").data(byteArray).build()
-        ).build()
-        
-        val content = Content.builder().parts(listOf(imagePart, textPart)).build()
-        
-        // Call the correct, modern API
-        var currentAttempt = 0
-        val maxAttempts = 3
-        while (true) {
-            try {
-                val response = client.models.generateContent(
-                    "gemini-3.8-flash",
-                    content,
-                    null
-                )
-                
-                val jsonString = response.text() ?: throw Exception("Respuesta de IA nula")
-                val jsonLimpio = jsonString.replace("```json", "").replace("```", "").trim()
-                
-                return@withContext json.decodeFromString<InvoiceData>(jsonLimpio)
-            } catch (e: Exception) {
-                currentAttempt++
-                if (currentAttempt >= maxAttempts) {
-                    throw e
-                }
-                kotlinx.coroutines.delay(32000L) // Wait 32 seconds to bypass the 5 requests/min quota
-            }
+        // Build JSON payload
+        val payload = JSONObject()
+        payload.put("model", "llama-3.2-11b-vision-preview")
+        // payload.put("model", "llama-3.2-90b-vision-preview") // You could also try the 90b model if 11b acts up
+
+        val message = JSONObject()
+        message.put("role", "user")
+
+        val contentArray = JSONArray()
+
+        val textContent = JSONObject()
+        textContent.put("type", "text")
+        textContent.put("text", promptText)
+        contentArray.put(textContent)
+
+        val imageContent = JSONObject()
+        imageContent.put("type", "image_url")
+        val imageUrl = JSONObject()
+        imageUrl.put("url", "data:image/jpeg;base64,$base64Image")
+        imageContent.put("image_url", imageUrl)
+        contentArray.put(imageContent)
+
+        message.put("content", contentArray)
+
+        val messagesArray = JSONArray()
+        messagesArray.put(message)
+        payload.put("messages", messagesArray)
+
+        val request = Request.Builder()
+            .url("https://api.groq.com/openai/v1/chat/completions")
+            .addHeader("Authorization", "Bearer ${BuildConfig.GROQ_API_KEY}")
+            .post(payload.toString().toRequestBody("application/json".toMediaType()))
+            .build()
+
+        val response = client.newCall(request).execute()
+        val responseBody = response.body?.string() ?: throw Exception("Empty response from Groq")
+
+        if (!response.isSuccessful) {
+            throw Exception("Groq Error: ${response.code} - $responseBody")
         }
-        throw IllegalStateException("Unreachable")
+
+        // Extract assistant message
+        val root = JSONObject(responseBody)
+        val choices = root.getJSONArray("choices")
+        val firstChoice = choices.getJSONObject(0)
+        val messageObj = firstChoice.getJSONObject("message")
+        val jsonString = messageObj.getString("content")
+
+        val jsonLimpio = jsonString.replace("```json", "").replace("```", "").trim()
+        val jsonParser = Json { ignoreUnknownKeys = true; explicitNulls = false; coerceInputValues = true }
+        return@withContext jsonParser.decodeFromString<InvoiceData>(jsonLimpio)
     }
 }
 
