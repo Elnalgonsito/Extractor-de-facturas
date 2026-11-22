@@ -87,3 +87,6 @@
 ## Etapa 23: Pivote a Groq (LLaVA Vision)
 - **Reemplazo de Motor IA:** Debido a las extremas restricciones del plan gratuito de Google Gemini, se eliminaron todas las dependencias de Google GenAI y se construyó un cliente HTTP nativo con `OkHttp`.
 - **Integración de Groq:** La aplicación ahora se comunica directamente con la API de Groq, utilizando su modelo multimodal de código abierto `llama-3.2-11b-vision-preview`, procesando las imágenes codificadas en Base64 de forma ultra-rápida y evitando por completo los errores 429.
+
+## Etapa 24: Actualización de Modelo Groq
+- **Cambio de Alias:** Se actualizó el modelo de generación de `llama-3.2-11b-vision-preview` a `llama-3.2-11b-vision-instruct` debido a la desactivación del entorno de pruebas (preview) por parte de Groq.
