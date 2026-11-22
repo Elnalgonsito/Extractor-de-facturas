@@ -105,7 +105,7 @@ class GeminiInvoiceParser {
 
         // Build JSON payload
         val payload = JSONObject()
-        payload.put("model", "llama-3.2-11b-vision-instruct")
+        payload.put("model", "qwen/qwen3.8-27b")
         // payload.put("model", "llama-3.2-90b-vision-preview") // You could also try the 90b model if 11b acts up
 
         val message = JSONObject()

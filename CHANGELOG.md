@@ -90,3 +90,6 @@
 
 ## Etapa 24: Actualización de Modelo Groq
 - **Cambio de Alias:** Se actualizó el modelo de generación de `llama-3.2-11b-vision-preview` a `llama-3.2-11b-vision-instruct` debido a la desactivación del entorno de pruebas (preview) por parte de Groq.
+
+## Etapa 25: Resolución de Acceso a Modelos Groq
+- **Cambio de Motor Multimodal (Qwen):** Se detectó que las llaves API de Groq del usuario no tienen permisos habilitados para usar la familia `llama-vision`. El motor se migró a `qwen/qwen3.8-27b`, el cual es el único modelo de visión de última generación disponible y habilitado bajo la cuota de la cuenta actual para evitar errores 404 de permisos.
