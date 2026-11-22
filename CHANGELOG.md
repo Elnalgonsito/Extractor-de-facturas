@@ -73,3 +73,6 @@
 ## Etapa 19: Corrección de Fugas de Memoria (Infinite Loading)
 - **Prevención de OutOfMemoryError:** Se implementó una decodificación segura de imágenes (`setTargetSampleSize`) para comprimir fotografías nativamente antes de subirlas a la RAM, resolviendo el "cuelgue" silencioso al cargar fotos de alta resolución.
 - **Resiliencia Total:** Se actualizó el manejador de corrutinas para atrapar `Throwable` (en lugar de solo `Exception`), garantizando que la interfaz siempre reciba retroalimentación incluso frente a errores fatales de la Máquina Virtual.
+
+## Etapa 20: Estabilización Definitiva del Modelo
+- **Downgrade Estratégico:** Se cambió el modelo de generación de `gemini-3.8-flash` a `gemini-1.5-flash`. Esto soluciona los constantes errores 503 (Servidores Saturados) causados por la inestabilidad de las versiones experimentales, garantizando una extracción de datos multimodal fluida, rápida y sin interrupciones.

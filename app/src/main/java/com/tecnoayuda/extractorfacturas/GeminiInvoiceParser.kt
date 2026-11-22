@@ -84,7 +84,7 @@ class GeminiInvoiceParser {
         
         // Call the correct, modern API
         val response = client.models.generateContent(
-            "gemini-3.8-flash",
+            "gemini-1.5-flash",
             content,
             null
         )
