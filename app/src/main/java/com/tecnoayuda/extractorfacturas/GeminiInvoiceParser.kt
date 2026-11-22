@@ -83,16 +83,29 @@ class GeminiInvoiceParser {
         val content = Content.builder().parts(listOf(imagePart, textPart)).build()
         
         // Call the correct, modern API
-        val response = client.models.generateContent(
-            "gemini-2.5-flash",
-            content,
-            null
-        )
-        
-        val jsonString = response.text() ?: throw Exception("Respuesta de IA nula")
-        val jsonLimpio = jsonString.replace("```json", "").replace("```", "").trim()
-        
-        return@withContext json.decodeFromString<InvoiceData>(jsonLimpio)
+        var currentAttempt = 0
+        val maxAttempts = 3
+        while (true) {
+            try {
+                val response = client.models.generateContent(
+                    "gemini-3.8-flash",
+                    content,
+                    null
+                )
+                
+                val jsonString = response.text() ?: throw Exception("Respuesta de IA nula")
+                val jsonLimpio = jsonString.replace("```json", "").replace("```", "").trim()
+                
+                return@withContext json.decodeFromString<InvoiceData>(jsonLimpio)
+            } catch (e: Exception) {
+                currentAttempt++
+                if (currentAttempt >= maxAttempts) {
+                    throw e
+                }
+                kotlinx.coroutines.delay(32000L) // Wait 32 seconds to bypass the 5 requests/min quota
+            }
+        }
+        throw IllegalStateException("Unreachable")
     }
 }
 

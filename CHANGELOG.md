@@ -79,3 +79,7 @@
 
 ## Etapa 21: Compatibilidad de Modelos con el Nuevo SDK GenAI
 - **Salto Generacional:** Se actualizó el modelo a `gemini-2.5-flash` debido a que la versión 1.5 fue oficialmente retirada y descontinuada de la nueva API `com.google.genai` (Error 404). Esta versión asegura compatibilidad total con la nueva arquitectura.
+
+## Etapa 22: Resolución Definitiva de Cuotas y Modelos (Auto-Reintento)
+- **Fijación de Modelo Forzoso:** Se fijó el modelo a `gemini-3.8-flash` de manera definitiva, ya que Google bloqueó el acceso a modelos antiguos para cuentas nuevas en el SDK de Interactions.
+- **Algoritmo de Auto-Reintento (Backoff):** Para lidiar con el estricto candado gratuito de "5 peticiones por minuto" (Error 429) y saturaciones (Error 503), se implementó un ciclo de auto-reintento inteligente. Si la IA rechaza la conexión, la aplicación pausa silenciosamente durante 32 segundos y lo vuelve a intentar automáticamente hasta 3 veces antes de arrojar un error, garantizando que la extracción se logre sin frustrar al usuario.

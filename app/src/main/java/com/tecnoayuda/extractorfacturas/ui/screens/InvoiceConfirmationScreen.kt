@@ -76,7 +76,7 @@ fun InvoiceConfirmationScreen(
     var isLoading by remember { mutableStateOf(false) }
     var extractedText by remember(initialExtractedText) { mutableStateOf(initialExtractedText ?: "") }
     var currentInvoiceData by remember { mutableStateOf<InvoiceData?>(null) }
-    var parsingStatus by remember { mutableStateOf("Esperando análisis de Inteligencia Artificial...") }
+    var parsingStatus by remember { mutableStateOf("Esperando análisis de Inteligencia Artificial...\n(Esto puede tardar hasta 40 segundos por límites del servidor gratuito)") }
 
     val parser = remember { GeminiInvoiceParser() }
     val context = LocalContext.current
