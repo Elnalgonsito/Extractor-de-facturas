@@ -87,9 +87,13 @@ fun InvoiceConfirmationScreen(
             
             try {
                 val uri = android.net.Uri.parse(initialImagenUri)
-                val bitmap = android.graphics.ImageDecoder.decodeBitmap(
-                    android.graphics.ImageDecoder.createSource(context.contentResolver, uri)
-                )
+                val source = android.graphics.ImageDecoder.createSource(context.contentResolver, uri)
+                val bitmap = android.graphics.ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
+                    val maxDim = maxOf(info.size.width, info.size.height)
+                    if (maxDim > 1024) {
+                        decoder.setTargetSampleSize(maxDim / 1024)
+                    }
+                }
                 
                 // AI parsing
                 val parsedData = parser.parseInvoice(bitmap)
@@ -101,8 +105,8 @@ fun InvoiceConfirmationScreen(
                 if (parsedData.iva != null) iva = parsedData.iva.toString()
                 if (parsedData.ieps != null) ieps = parsedData.ieps.toString()
                 if (!parsedData.link_facturacion.isNullOrBlank()) linkFactura = parsedData.link_facturacion
-            } catch (e: Exception) {
-                val rawError = e.localizedMessage ?: ""
+            } catch (e: Throwable) {
+                val rawError = e.localizedMessage ?: e.javaClass.simpleName
                 val errorMsg = when {
                     rawError.contains("503") || rawError.contains("high demand") -> 
                         "Los servidores de Google Gemini están saturados en este momento. Por favor, intenta de nuevo en unos minutos."

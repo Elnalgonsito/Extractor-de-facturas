@@ -69,3 +69,7 @@
 ## Etapa 18: Estabilización de Arquitectura y Manejo de Límites de Cuota (429)
 - **Implementación Definitiva:** Se estabilizó la conexión multimodal utilizando el SDK oficial `com.google.genai`, convirtiendo los Bitmaps a flujos de bytes (JPEG) y empaquetándolos bajo la estructura moderna `Part`.
 - **Manejo de Errores Quota:** El sistema es capaz de interceptar de forma limpia los errores `429 RESOURCE_EXHAUSTED`, brindándole visibilidad al usuario de que los límites del plan gratuito de Google han sido alcanzados y previniendo que la aplicación se congele.
+
+## Etapa 19: Corrección de Fugas de Memoria (Infinite Loading)
+- **Prevención de OutOfMemoryError:** Se implementó una decodificación segura de imágenes (`setTargetSampleSize`) para comprimir fotografías nativamente antes de subirlas a la RAM, resolviendo el "cuelgue" silencioso al cargar fotos de alta resolución.
+- **Resiliencia Total:** Se actualizó el manejador de corrutinas para atrapar `Throwable` (en lugar de solo `Exception`), garantizando que la interfaz siempre reciba retroalimentación incluso frente a errores fatales de la Máquina Virtual.
