@@ -76,3 +76,6 @@
 
 ## Etapa 20: Estabilización Definitiva del Modelo
 - **Downgrade Estratégico:** Se cambió el modelo de generación de `gemini-3.8-flash` a `gemini-1.5-flash`. Esto soluciona los constantes errores 503 (Servidores Saturados) causados por la inestabilidad de las versiones experimentales, garantizando una extracción de datos multimodal fluida, rápida y sin interrupciones.
+
+## Etapa 21: Compatibilidad de Modelos con el Nuevo SDK GenAI
+- **Salto Generacional:** Se actualizó el modelo a `gemini-2.5-flash` debido a que la versión 1.5 fue oficialmente retirada y descontinuada de la nueva API `com.google.genai` (Error 404). Esta versión asegura compatibilidad total con la nueva arquitectura.
