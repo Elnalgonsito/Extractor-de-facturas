@@ -112,3 +112,7 @@
 
 ## Etapa 30: Fusión de Resumen IA en Exportación
 - **Mejora de Correo Electrónico:** Se actualizó la plantilla del correo de exportación para incluir tanto los datos extraídos/editables en la interfaz gráfica (Subtotal, IVA, etc.) como el bloque original del "Resumen del Ticket" generado por la IA en la parte inferior, brindando contexto completo al contador o destinatario final.
+
+## Etapa 31: Adjuntar Fotografías en Exportación por Correo
+- **Compartir Archivos Seguros:** Se modificó la estructura del botón de exportación para utilizar `Intent.ACTION_SEND` (en lugar de SENDTO) con el fin de soportar archivos adjuntos.
+- **Delegación de Permisos:** Ahora, si la factura contiene una fotografía original (URI), la aplicación concede temporalmente permisos de lectura a la aplicación de correo (Gmail, Outlook, etc.) y adjunta la imagen automáticamente junto con el cuerpo de texto, completando el ecosistema de exportación.

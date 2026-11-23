@@ -308,10 +308,11 @@ fun InvoiceConfirmationScreen(
 
             OutlinedButton(
                 onClick = {
-                    val intent = Intent(Intent.ACTION_SENDTO).apply {
-                        data = Uri.parse("mailto:")
+                    val intent = Intent(Intent.ACTION_SEND).apply {
+                        type = "message/rfc822" // Forces email clients
                         putExtra(Intent.EXTRA_EMAIL, arrayOf(correoDestino))
                         putExtra(Intent.EXTRA_SUBJECT, "Datos de Facturación - $provider")
+                        
                         val emailBody = """
                             Datos de Facturación:
                             
@@ -328,10 +329,18 @@ fun InvoiceConfirmationScreen(
                             --------------------------
                             $textToDisplay
                         """.trimIndent()
+                        
                         putExtra(Intent.EXTRA_TEXT, emailBody)
+                        
+                        // Attach image if present
+                        if (!initialImagenUri.isNullOrBlank()) {
+                            val uri = Uri.parse(initialImagenUri)
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
                     }
                     try {
-                        context.startActivity(intent)
+                        context.startActivity(Intent.createChooser(intent, "Enviar correo con adjunto..."))
                     } catch (e: ActivityNotFoundException) {
                         e.printStackTrace()
                     }
