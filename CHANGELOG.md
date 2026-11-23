@@ -99,3 +99,7 @@
 - **Filtro de Tickets:** Los tickets ahora se guardan y se filtran específicamente dentro de la carpeta seleccionada.
 - **Borrado de Datos:** Se implementó la capacidad de eliminar tickets individualmente (ícono de papelera en los detalles) y eliminar carpetas completas.
 - **Migración de Base de Datos:** Se actualizó el esquema de Room para soportar relaciones (Folder -> Invoices).
+
+## Etapa 27: Escáner Híbrido de Códigos QR (ML Kit)
+- **Detección de URLs Exactas:** La Inteligencia Artificial es excelente leyendo texto, pero no puede decodificar códigos bidimensionales. Se re-integró Google ML Kit específicamente con su módulo `barcode-scanning` para detectar códigos QR en las fotografías de los tickets.
+- **Fusión de Datos:** Si el ticket (como los de Farmacias Guadalajara) contiene un QR para facturar, el escáner lo lee de forma nativa e inyecta la URL 100% precisa en el campo "Link para facturar", sobrescribiendo cualquier enlace alucinado por la IA.

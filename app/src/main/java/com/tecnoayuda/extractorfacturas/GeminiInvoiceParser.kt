@@ -14,6 +14,12 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.TimeUnit
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.common.InputImage
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 @Serializable
 data class InvoiceData(
@@ -103,6 +109,9 @@ class GeminiInvoiceParser {
         scaled.compress(Bitmap.CompressFormat.JPEG, 80, stream)
         val base64Image = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
 
+        // Extract QR Code Link if available
+        val qrLink = scanQrCode(bitmap)
+
         // Build JSON payload
         val payload = JSONObject()
         payload.put("model", "qwen/qwen3.8-27b")
@@ -153,8 +162,34 @@ class GeminiInvoiceParser {
 
         val jsonLimpio = jsonString.replace("```json", "").replace("```", "").trim()
         val jsonParser = Json { ignoreUnknownKeys = true; explicitNulls = false; coerceInputValues = true }
-        return@withContext jsonParser.decodeFromString<InvoiceData>(jsonLimpio)
+        val parsedData = jsonParser.decodeFromString<InvoiceData>(jsonLimpio)
+        return@withContext if (!qrLink.isNullOrBlank()) {
+            parsedData.copy(link_facturacion = qrLink)
+        } else {
+            parsedData
+        }
     }
+}
+
+suspend fun scanQrCode(bitmap: android.graphics.Bitmap): String? = suspendCancellableCoroutine { continuation ->
+    val image = InputImage.fromBitmap(bitmap, 0)
+    val options = BarcodeScannerOptions.Builder()
+        .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+        .build()
+    val scanner = BarcodeScanning.getClient(options)
+
+    scanner.process(image)
+        .addOnSuccessListener { barcodes ->
+            // Try to get a URL, otherwise get raw value
+            val url = barcodes.firstOrNull()?.url?.url ?: barcodes.firstOrNull()?.rawValue
+            if (continuation.isActive) continuation.resume(url)
+        }
+        .addOnFailureListener {
+            if (continuation.isActive) continuation.resume(null)
+        }
+        .addOnCompleteListener {
+            scanner.close()
+        }
 }
 
 fun generarResumenLimpio(datos: InvoiceData, lineasEspaciado: Int = 1): String {
