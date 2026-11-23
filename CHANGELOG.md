@@ -106,3 +106,6 @@
 
 ## Etapa 28: Optimización de Cuotas (Max Tokens)
 - **Control de Longitud de Salida:** Se detectó un límite estricto de Groq de 1000 tokens de salida por minuto para el nivel gratuito. Se agregó el parámetro explícito `max_tokens = 800` y `temperature = 0.1` al cuerpo de la petición HTTP, asegurando que la respuesta de la IA siempre se mantenga por debajo del límite de bloqueo (Error 429).
+
+## Etapa 29: Corrección de Exportación por Correo
+- **Cuerpo de Correo Dinámico:** Se corrigió un error donde el correo se enviaba vacío ("Sin detalles") al abrir facturas previamente guardadas. El cuerpo del correo ahora se construye en tiempo real leyendo directamente los campos de texto de la pantalla, garantizando que incluya el Subtotal, IVA, IEPS y cualquier edición manual que haya hecho el usuario.

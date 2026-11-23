@@ -312,12 +312,19 @@ fun InvoiceConfirmationScreen(
                         data = Uri.parse("mailto:")
                         putExtra(Intent.EXTRA_EMAIL, arrayOf(correoDestino))
                         putExtra(Intent.EXTRA_SUBJECT, "Datos de Facturación - $provider")
-                        val jsonGeneradoPorIA = currentInvoiceData?.let {
-                            kotlinx.serialization.json.Json.encodeToString(com.tecnoayuda.extractorfacturas.InvoiceData.serializer(), it)
-                        }
-                        val emailBody = jsonGeneradoPorIA?.let {
-                            formatearTicketLimpio(it, 2)
-                        } ?: "Sin detalles."
+                        val emailBody = """
+                            Datos de Facturación:
+                            
+                            Proveedor: $provider
+                            Fecha: $date
+                            
+                            Subtotal: $$subtotal
+                            IVA (16%): $$iva
+                            IEPS (8%): $$ieps
+                            Total: $$total
+                            
+                            Link para facturar: $linkFactura
+                        """.trimIndent()
                         putExtra(Intent.EXTRA_TEXT, emailBody)
                     }
                     try {
