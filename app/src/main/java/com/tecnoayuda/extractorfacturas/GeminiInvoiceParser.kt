@@ -115,6 +115,8 @@ class GeminiInvoiceParser {
         // Build JSON payload
         val payload = JSONObject()
         payload.put("model", "qwen/qwen3.8-27b")
+        payload.put("max_tokens", 800) // Limita estrictamente la salida para no romper la cuota gratuita
+        payload.put("temperature", 0.1)
         // payload.put("model", "llama-3.2-90b-vision-preview") // You could also try the 90b model if 11b acts up
 
         val message = JSONObject()

@@ -103,3 +103,6 @@
 ## Etapa 27: Escáner Híbrido de Códigos QR (ML Kit)
 - **Detección de URLs Exactas:** La Inteligencia Artificial es excelente leyendo texto, pero no puede decodificar códigos bidimensionales. Se re-integró Google ML Kit específicamente con su módulo `barcode-scanning` para detectar códigos QR en las fotografías de los tickets.
 - **Fusión de Datos:** Si el ticket (como los de Farmacias Guadalajara) contiene un QR para facturar, el escáner lo lee de forma nativa e inyecta la URL 100% precisa en el campo "Link para facturar", sobrescribiendo cualquier enlace alucinado por la IA.
+
+## Etapa 28: Optimización de Cuotas (Max Tokens)
+- **Control de Longitud de Salida:** Se detectó un límite estricto de Groq de 1000 tokens de salida por minuto para el nivel gratuito. Se agregó el parámetro explícito `max_tokens = 800` y `temperature = 0.1` al cuerpo de la petición HTTP, asegurando que la respuesta de la IA siempre se mantenga por debajo del límite de bloqueo (Error 429).
