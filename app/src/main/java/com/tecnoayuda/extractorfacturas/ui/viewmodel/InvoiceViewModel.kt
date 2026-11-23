@@ -3,6 +3,7 @@ package com.tecnoayuda.extractorfacturas.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.tecnoayuda.extractorfacturas.data.local.Folder
 import com.tecnoayuda.extractorfacturas.data.local.Invoice
 import com.tecnoayuda.extractorfacturas.data.repository.InvoiceRepository
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,6 +22,40 @@ class InvoiceViewModel(
             initialValue = emptyList()
         )
 
+    val folderList: StateFlow<List<Folder>> = repository.getAllFolders()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    fun getInvoicesForFolder(folderId: Long): StateFlow<List<Invoice>> {
+        return repository.getInvoicesByFolder(folderId)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
+    }
+
+    fun createFolder(name: String) {
+        viewModelScope.launch {
+            repository.insertFolder(Folder(name = name))
+        }
+    }
+
+    fun deleteFolder(folder: Folder) {
+        viewModelScope.launch {
+            repository.deleteFolder(folder)
+        }
+    }
+
+    fun deleteInvoice(invoice: Invoice) {
+        viewModelScope.launch {
+            repository.deleteInvoice(invoice)
+        }
+    }
+
     fun saveInvoice(
         date: String,
         provider: String,
@@ -31,7 +66,8 @@ class InvoiceViewModel(
         correoDestino: String?,
         subtotal: Double?,
         iva: Double?,
-        ieps: Double?
+        ieps: Double?,
+        folderId: Long
     ) {
         val invoice = Invoice(
             date = date,
@@ -43,7 +79,8 @@ class InvoiceViewModel(
             correoDestino = correoDestino,
             subtotal = subtotal,
             iva = iva,
-            ieps = ieps
+            ieps = ieps,
+            folderId = folderId
         )
         viewModelScope.launch {
             repository.insertInvoice(invoice)

@@ -16,5 +16,6 @@ data class Invoice(
     val correoDestino: String? = null,
     val subtotal: Double? = null,
     val iva: Double? = null,
-    val ieps: Double? = null
+    val ieps: Double? = null,
+    val folderId: Long = 0L
 )

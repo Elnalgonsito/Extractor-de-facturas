@@ -31,10 +31,13 @@ import com.tecnoayuda.extractorfacturas.ui.viewmodel.InvoiceViewModelFactory
 import kotlinx.serialization.Serializable
 
 @Serializable
-object InvoiceListRoute : NavKey
+object FolderListRoute : NavKey
 
 @Serializable
-data class AddInvoiceRoute(val extractedText: String? = null, val imagenUri: String? = null) : NavKey
+data class InvoiceListRoute(val folderId: Long, val folderName: String) : NavKey
+
+@Serializable
+data class AddInvoiceRoute(val folderId: Long, val extractedText: String? = null, val imagenUri: String? = null) : NavKey
 
 @Serializable
 data class InvoiceDetailRoute(val id: Long) : NavKey
@@ -61,13 +64,14 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation() {
     val context = LocalContext.current
     val database = remember { AppDatabase.getDatabase(context) }
-    val repository = remember { InvoiceRepositoryImpl(database.invoiceDao()) }
+    val repository = remember { InvoiceRepositoryImpl(database.invoiceDao(), database.folderDao()) }
     val factory = remember { InvoiceViewModelFactory(repository) }
     val viewModel: InvoiceViewModel = viewModel(factory = factory)
     
-    val invoices by viewModel.invoiceList.collectAsState()
+    val folders by viewModel.folderList.collectAsState()
+    val invoices by viewModel.invoiceList.collectAsState() // or load conditionally
     
-    val backStack = rememberNavBackStack(InvoiceListRoute)
+    val backStack = rememberNavBackStack(FolderListRoute)
     val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
     
     NavDisplay(
@@ -75,15 +79,31 @@ fun AppNavigation() {
         sceneStrategy = listDetailStrategy,
         onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
-            entry<InvoiceListRoute>(
+            entry<FolderListRoute>(
                 metadata = ListDetailSceneStrategy.listPane()
             ) {
+                com.tecnoayuda.extractorfacturas.ui.screens.FolderListScreen(
+                    folders = folders,
+                    onCreateFolder = { name -> viewModel.createFolder(name) },
+                    onFolderClick = { folder ->
+                        backStack.add(InvoiceListRoute(folderId = folder.id, folderName = folder.name))
+                    },
+                    onDeleteFolder = { folder -> viewModel.deleteFolder(folder) }
+                )
+            }
+
+            entry<InvoiceListRoute>(
+                metadata = ListDetailSceneStrategy.listPane()
+            ) { route ->
+                val folderInvoices = invoices.filter { it.folderId == route.folderId }
                 InvoiceListScreen(
-                    invoices = invoices,
-                    onAddInvoiceClick = { text, uri -> backStack.add(AddInvoiceRoute(text, uri)) },
+                    folderName = route.folderName,
+                    invoices = folderInvoices,
+                    onAddInvoiceClick = { text, uri -> backStack.add(AddInvoiceRoute(route.folderId, text, uri)) },
                     onInvoiceClick = { invoice ->
                         backStack.add(InvoiceDetailRoute(invoice.id))
-                    }
+                    },
+                    onBackClick = { backStack.removeLastOrNull() }
                 )
             }
             
@@ -104,7 +124,8 @@ fun AppNavigation() {
                             correoDestino = correoDestino,
                             subtotal = subtotal.toDoubleOrNull(),
                             iva = iva.toDoubleOrNull(),
-                            ieps = ieps.toDoubleOrNull()
+                            ieps = ieps.toDoubleOrNull(),
+                            folderId = route.folderId
                         )
                         backStack.removeLastOrNull()
                     },
@@ -127,8 +148,11 @@ fun AppNavigation() {
                     initialIeps = invoice?.ieps?.toString() ?: "",
                     initialLinkFactura = invoice?.linkFactura,
                     initialCorreoDestino = invoice?.correoDestino,
+                    onDeleteClick = {
+                        invoice?.let { viewModel.deleteInvoice(it) }
+                        backStack.removeLastOrNull()
+                    },
                     onSaveClick = { provider, date, total, subtotal, iva, ieps, linkFactura, correoDestino, imagenUri, textoCrudo ->
-                        // Since we don't have an update mechanism yet, we can just save as a new or ignore.
                         viewModel.saveInvoice(
                             date = date,
                             provider = provider,
@@ -139,7 +163,8 @@ fun AppNavigation() {
                             correoDestino = correoDestino,
                             subtotal = subtotal.toDoubleOrNull(),
                             iva = iva.toDoubleOrNull(),
-                            ieps = ieps.toDoubleOrNull()
+                            ieps = ieps.toDoubleOrNull(),
+                            folderId = invoice?.folderId ?: 0L
                         )
                         backStack.removeLastOrNull()
                     },

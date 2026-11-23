@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material.icons.rounded.AttachMoney
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Storefront
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -62,6 +63,7 @@ fun InvoiceConfirmationScreen(
     initialLinkFactura: String? = null,
     initialCorreoDestino: String? = null,
     modifier: Modifier = Modifier,
+    onDeleteClick: (() -> Unit)? = null,
     onSaveClick: (provider: String, date: String, total: String, subtotal: String, iva: String, ieps: String, linkFactura: String?, correoDestino: String?, imagenUri: String?, textoCrudo: String?) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -134,6 +136,17 @@ fun InvoiceConfirmationScreen(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = "Back"
                         )
+                    }
+                },
+                actions = {
+                    if (onDeleteClick != null) {
+                        IconButton(onClick = onDeleteClick) {
+                            Icon(
+                                imageVector = Icons.Rounded.Delete,
+                                contentDescription = "Delete Invoice",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
             )

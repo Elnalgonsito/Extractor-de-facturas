@@ -30,12 +30,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tecnoayuda.extractorfacturas.data.local.Invoice
 
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material3.IconButton
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InvoiceListScreen(
+    folderName: String,
     invoices: List<Invoice>,
     onAddInvoiceClick: (String?, String?) -> Unit,
     onInvoiceClick: (Invoice) -> Unit,
+    onBackClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -48,7 +53,12 @@ fun InvoiceListScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Invoices", style = MaterialTheme.typography.headlineLarge) }
+                title = { Text(folderName, style = MaterialTheme.typography.headlineLarge) },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -142,6 +152,7 @@ fun InvoiceItemCard(
 fun InvoiceListScreenPreview() {
     MaterialTheme {
         InvoiceListScreen(
+            folderName = "General",
             invoices = listOf(
                 Invoice(provider = "Supermarket", date = "2023-10-25", totalAmount = 120.50),
                 Invoice(provider = "Internet Provider", date = "2023-10-26", totalAmount = 50.0)

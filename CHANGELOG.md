@@ -93,3 +93,9 @@
 
 ## Etapa 25: Resolución de Acceso a Modelos Groq
 - **Cambio de Motor Multimodal (Qwen):** Se detectó que las llaves API de Groq del usuario no tienen permisos habilitados para usar la familia `llama-vision`. El motor se migró a `qwen/qwen3.8-27b`, el cual es el único modelo de visión de última generación disponible y habilitado bajo la cuota de la cuenta actual para evitar errores 404 de permisos.
+
+## Etapa 26: Organización por Carpetas y Gestión de Archivos
+- **Estructura de Carpetas:** Se rediseñó el flujo de la aplicación. Ahora la pantalla principal muestra una cuadrícula de carpetas personalizables.
+- **Filtro de Tickets:** Los tickets ahora se guardan y se filtran específicamente dentro de la carpeta seleccionada.
+- **Borrado de Datos:** Se implementó la capacidad de eliminar tickets individualmente (ícono de papelera en los detalles) y eliminar carpetas completas.
+- **Migración de Base de Datos:** Se actualizó el esquema de Room para soportar relaciones (Folder -> Invoices).

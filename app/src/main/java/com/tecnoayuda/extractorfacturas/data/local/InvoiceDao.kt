@@ -13,6 +13,9 @@ interface InvoiceDao {
     @Query("SELECT * FROM invoices ORDER BY date DESC")
     fun getAllInvoices(): Flow<List<Invoice>>
 
+    @Query("SELECT * FROM invoices WHERE folderId = :folderId ORDER BY id DESC")
+    fun getInvoicesByFolder(folderId: Long): Flow<List<Invoice>>
+
     @Query("SELECT * FROM invoices WHERE id = :id")
     suspend fun getInvoiceById(id: Long): Invoice?
 
