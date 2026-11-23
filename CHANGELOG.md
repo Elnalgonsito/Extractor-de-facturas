@@ -109,3 +109,6 @@
 
 ## Etapa 29: Corrección de Exportación por Correo
 - **Cuerpo de Correo Dinámico:** Se corrigió un error donde el correo se enviaba vacío ("Sin detalles") al abrir facturas previamente guardadas. El cuerpo del correo ahora se construye en tiempo real leyendo directamente los campos de texto de la pantalla, garantizando que incluya el Subtotal, IVA, IEPS y cualquier edición manual que haya hecho el usuario.
+
+## Etapa 30: Fusión de Resumen IA en Exportación
+- **Mejora de Correo Electrónico:** Se actualizó la plantilla del correo de exportación para incluir tanto los datos extraídos/editables en la interfaz gráfica (Subtotal, IVA, etc.) como el bloque original del "Resumen del Ticket" generado por la IA en la parte inferior, brindando contexto completo al contador o destinatario final.

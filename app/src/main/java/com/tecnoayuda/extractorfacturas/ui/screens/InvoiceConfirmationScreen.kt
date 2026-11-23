@@ -324,6 +324,9 @@ fun InvoiceConfirmationScreen(
                             Total: $$total
                             
                             Link para facturar: $linkFactura
+                            
+                            --------------------------
+                            $textToDisplay
                         """.trimIndent()
                         putExtra(Intent.EXTRA_TEXT, emailBody)
                     }
