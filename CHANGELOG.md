@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 32: Visor Interactivo de Imágenes (Zoom y Paneo)
+- **Exploración a Detalle:** Se implementó una función para ampliar la fotografía original del ticket dentro de la pantalla de detalles.
+- **Gestos Táctiles:** Al tocar la imagen en miniatura, se despliega un visor a pantalla completa que soporta gestos nativos (Pinch-to-zoom para acercar/alejar y Paneo para desplazarse por la imagen), permitiéndole al usuario auditar los detalles microscópicos de la factura antes de guardarla o enviarla.
+
 ## Etapa 1: Arquitectura Base e Interfaz Gráfica
 - **Base de Datos (Room):** Configuración inicial con Entidad, DAO y Repositorio para guardar facturas.
 - **Gestión de Estado (ViewModel):** Implementación de MVVM usando Kotlin Coroutines y StateFlow.

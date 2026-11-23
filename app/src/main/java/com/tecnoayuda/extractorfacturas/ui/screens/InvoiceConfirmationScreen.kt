@@ -43,6 +43,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material.icons.rounded.Close
 import coil.compose.AsyncImage
 import com.tecnoayuda.extractorfacturas.GeminiInvoiceParser
 import com.tecnoayuda.extractorfacturas.InvoiceData
@@ -79,6 +88,7 @@ fun InvoiceConfirmationScreen(
     var extractedText by remember(initialExtractedText) { mutableStateOf(initialExtractedText ?: "") }
     var currentInvoiceData by remember { mutableStateOf<InvoiceData?>(null) }
     var parsingStatus by remember { mutableStateOf("Analizando con Groq Vision...") }
+    var isImageExpanded by remember { mutableStateOf(false) }
 
     val parser = remember { GeminiInvoiceParser() }
     val context = LocalContext.current
@@ -178,7 +188,8 @@ fun InvoiceConfirmationScreen(
                     contentDescription = "Invoice Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
+                        .height(200.dp)
+                        .clickable { isImageExpanded = true },
                     contentScale = ContentScale.Crop
                 )
             }
@@ -351,6 +362,60 @@ fun InvoiceConfirmationScreen(
                 shape = MaterialTheme.shapes.extraLarge
             ) {
                 Text("Enviar por Correo", style = MaterialTheme.typography.titleMedium)
+            }
+        }
+    }
+
+    if (isImageExpanded && !initialImagenUri.isNullOrBlank()) {
+        Dialog(
+            onDismissRequest = { isImageExpanded = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false) // Ensures full screen
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+            ) {
+                var scale by remember { mutableStateOf(1f) }
+                var offsetX by remember { mutableStateOf(0f) }
+                var offsetY by remember { mutableStateOf(0f) }
+                
+                AsyncImage(
+                    model = initialImagenUri,
+                    contentDescription = "Full Screen Invoice",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pointerInput(Unit) {
+                            detectTransformGestures { _, pan, zoom, _ ->
+                                scale = (scale * zoom).coerceIn(1f, 5f)
+                                val maxX = (size.width * (scale - 1)) / 2
+                                val maxY = (size.height * (scale - 1)) / 2
+                                offsetX = (offsetX + pan.x * scale).coerceIn(-maxX, maxX)
+                                offsetY = (offsetY + pan.y * scale).coerceIn(-maxY, maxY)
+                            }
+                        }
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale,
+                            translationX = offsetX,
+                            translationY = offsetY
+                        ),
+                    contentScale = ContentScale.Fit
+                )
+                
+                IconButton(
+                    onClick = { isImageExpanded = false },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                        .background(Color.Black.copy(alpha = 0.5f), shape = androidx.compose.foundation.shape.CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = "Close",
+                        tint = Color.White
+                    )
+                }
             }
         }
     }
