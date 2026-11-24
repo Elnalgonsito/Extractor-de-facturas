@@ -25,13 +25,17 @@ import com.tecnoayuda.extractorfacturas.data.local.AppDatabase
 import com.tecnoayuda.extractorfacturas.data.repository.InvoiceRepositoryImpl
 import com.tecnoayuda.extractorfacturas.ui.screens.InvoiceConfirmationScreen
 import com.tecnoayuda.extractorfacturas.ui.screens.InvoiceListScreen
+import com.tecnoayuda.extractorfacturas.ui.screens.DocumentSelectorScreen
 import com.tecnoayuda.extractorfacturas.ui.theme.ExtractorDeFacturasTheme
 import com.tecnoayuda.extractorfacturas.ui.viewmodel.InvoiceViewModel
 import com.tecnoayuda.extractorfacturas.ui.viewmodel.InvoiceViewModelFactory
 import kotlinx.serialization.Serializable
 
 @Serializable
-object FolderListRoute : NavKey
+object DocumentSelectorRoute : NavKey
+
+@Serializable
+data class FolderListRoute(val documentType: String) : NavKey
 
 @Serializable
 data class InvoiceListRoute(val folderId: Long, val folderName: String) : NavKey
@@ -71,7 +75,7 @@ fun AppNavigation() {
     val folders by viewModel.folderList.collectAsState()
     val invoices by viewModel.invoiceList.collectAsState() // or load conditionally
     
-    val backStack = rememberNavBackStack(FolderListRoute)
+    val backStack = rememberNavBackStack(DocumentSelectorRoute)
     val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
     
     NavDisplay(
@@ -79,12 +83,24 @@ fun AppNavigation() {
         sceneStrategy = listDetailStrategy,
         onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
-            entry<FolderListRoute>(
+            entry<DocumentSelectorRoute>(
                 metadata = ListDetailSceneStrategy.listPane()
             ) {
+                DocumentSelectorScreen(
+                    onSelectDocumentType = { type ->
+                        backStack.add(FolderListRoute(type))
+                    }
+                )
+            }
+
+            entry<FolderListRoute>(
+                metadata = ListDetailSceneStrategy.listPane()
+            ) { route ->
+                viewModel.loadFolders(route.documentType)
                 com.tecnoayuda.extractorfacturas.ui.screens.FolderListScreen(
+                    documentType = route.documentType,
                     folders = folders,
-                    onCreateFolder = { name -> viewModel.createFolder(name) },
+                    onCreateFolder = { name, type -> viewModel.createFolder(name, type) },
                     onFolderClick = { folder ->
                         backStack.add(InvoiceListRoute(folderId = folder.id, folderName = folder.name))
                     },

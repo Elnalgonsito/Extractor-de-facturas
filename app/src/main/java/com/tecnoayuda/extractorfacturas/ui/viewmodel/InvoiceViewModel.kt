@@ -8,6 +8,8 @@ import com.tecnoayuda.extractorfacturas.data.local.Invoice
 import com.tecnoayuda.extractorfacturas.data.repository.InvoiceRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -22,12 +24,16 @@ class InvoiceViewModel(
             initialValue = emptyList()
         )
 
-    val folderList: StateFlow<List<Folder>> = repository.getAllFolders()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    private val _folders = MutableStateFlow<List<Folder>>(emptyList())
+    val folderList: StateFlow<List<Folder>> = _folders.asStateFlow()
+
+    fun loadFolders(type: String) {
+        viewModelScope.launch {
+            repository.getFoldersByType(type).collect {
+                _folders.value = it
+            }
+        }
+    }
 
     fun getInvoicesForFolder(folderId: Long): StateFlow<List<Invoice>> {
         return repository.getInvoicesByFolder(folderId)
@@ -38,9 +44,9 @@ class InvoiceViewModel(
             )
     }
 
-    fun createFolder(name: String) {
+    fun createFolder(name: String, documentType: String) {
         viewModelScope.launch {
-            repository.insertFolder(Folder(name = name))
+            repository.insertFolder(Folder(name = name, documentType = documentType))
         }
     }
 

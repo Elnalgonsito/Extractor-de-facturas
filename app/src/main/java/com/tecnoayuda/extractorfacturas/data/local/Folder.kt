@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class Folder(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
-    val name: String
+    val name: String,
+    val documentType: String
 )

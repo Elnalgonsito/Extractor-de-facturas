@@ -19,8 +19,8 @@ class InvoiceRepositoryImpl(
         return invoiceDao.getInvoicesByFolder(folderId)
     }
 
-    override fun getAllFolders(): Flow<List<Folder>> {
-        return folderDao.getAllFolders()
+    override fun getFoldersByType(type: String): Flow<List<Folder>> {
+        return folderDao.getFoldersByType(type)
     }
 
     override suspend fun insertFolder(folder: Folder) {

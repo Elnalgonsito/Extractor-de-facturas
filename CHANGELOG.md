@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 33: Soporte Multi-Documento (Tickets y Facturas)
+- **Pantalla de Selección de Documentos:** Se diseñó y construyó una nueva pantalla de inicio que le pregunta al usuario qué tipo de documento desea procesar (Ticket o Factura), preparando el terreno para flujos especializados.
+- **Aislamiento de Bases de Datos:** Se modificó la tabla de Carpetas (`Folders`) en Room para incluir el tipo de documento. Ahora, las carpetas de "Tickets" y "Facturas" viven en mundos separados y no se mezclan en la interfaz.
+
 ## Etapa 32: Visor Interactivo de Imágenes (Zoom y Paneo)
 - **Exploración a Detalle:** Se implementó una función para ampliar la fotografía original del ticket dentro de la pantalla de detalles.
 - **Gestos Táctiles:** Al tocar la imagen en miniatura, se despliega un visor a pantalla completa que soporta gestos nativos (Pinch-to-zoom para acercar/alejar y Paneo para desplazarse por la imagen), permitiéndole al usuario auditar los detalles microscópicos de la factura antes de guardarla o enviarla.

@@ -18,8 +18,9 @@ import com.tecnoayuda.extractorfacturas.data.local.Folder
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FolderListScreen(
+    documentType: String,
     folders: List<Folder>,
-    onCreateFolder: (String) -> Unit,
+    onCreateFolder: (String, String) -> Unit,
     onFolderClick: (Folder) -> Unit,
     onDeleteFolder: (Folder) -> Unit
 ) {
@@ -29,7 +30,7 @@ fun FolderListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Folders") }
+                title = { Text("Carpetas de $documentType") }
             )
         },
         floatingActionButton = {
@@ -78,7 +79,7 @@ fun FolderListScreen(
                     TextButton(
                         onClick = {
                             if (newFolderName.isNotBlank()) {
-                                onCreateFolder(newFolderName)
+                                onCreateFolder(newFolderName, documentType)
                             }
                             showDialog = false
                             newFolderName = ""

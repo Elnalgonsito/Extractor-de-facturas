@@ -15,6 +15,6 @@ interface FolderDao {
     @Delete
     suspend fun deleteFolder(folder: Folder)
 
-    @Query("SELECT * FROM folders ORDER BY id DESC")
-    fun getAllFolders(): Flow<List<Folder>>
+    @Query("SELECT * FROM folders WHERE documentType = :type ORDER BY id DESC")
+    fun getFoldersByType(type: String): Flow<List<Folder>>
 }

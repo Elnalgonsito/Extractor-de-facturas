@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface InvoiceRepository {
     fun getAllInvoices(): Flow<List<Invoice>>
     fun getInvoicesByFolder(folderId: Long): Flow<List<Invoice>>
-    fun getAllFolders(): Flow<List<Folder>>
+    fun getFoldersByType(type: String): Flow<List<Folder>>
     suspend fun insertFolder(folder: Folder)
     suspend fun deleteFolder(folder: Folder)
     suspend fun getInvoiceById(id: Long): Invoice?
