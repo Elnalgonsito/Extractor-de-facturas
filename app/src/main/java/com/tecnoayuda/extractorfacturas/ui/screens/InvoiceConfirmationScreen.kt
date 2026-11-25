@@ -102,6 +102,8 @@ fun InvoiceConfirmationScreen(
     var usoCfdi by remember(initialUsoCfdi) { mutableStateOf(initialUsoCfdi ?: "") }
     var formaPago by remember(initialFormaPago) { mutableStateOf(initialFormaPago ?: "") }
     var metodoPago by remember(initialMetodoPago) { mutableStateOf(initialMetodoPago ?: "") }
+    var razonSocialEmisor by remember { mutableStateOf("") }
+    var razonSocialReceptor by remember { mutableStateOf("") }
     
     var isLoading by remember { mutableStateOf(false) }
     var extractedText by remember(initialExtractedText) { mutableStateOf(initialExtractedText ?: "") }
@@ -129,22 +131,37 @@ fun InvoiceConfirmationScreen(
                 // AI parsing
                 val parsedData = parser.parseInvoice(bitmap, documentType)
                 currentInvoiceData = parsedData
-                if (!parsedData.proveedor.isNullOrBlank()) provider = parsedData.proveedor
-                if (!parsedData.fecha.isNullOrBlank()) date = parsedData.fecha
-                if (parsedData.total != null) total = parsedData.total.toString()
-                if (parsedData.subtotal != null) subtotal = parsedData.subtotal.toString()
-                if (parsedData.iva != null) iva = parsedData.iva.toString()
-                if (parsedData.ieps != null) ieps = parsedData.ieps.toString()
-                if (!parsedData.link_facturacion.isNullOrBlank()) linkFactura = parsedData.link_facturacion
                 
-                if (parsedData.facturaExtraida != null) {
-                    parsedData.facturaExtraida.uuid?.let { uuid = it }
-                    parsedData.facturaExtraida.emisor?.rfc?.let { rfcEmisor = it }
-                    parsedData.facturaExtraida.receptor?.rfc?.let { rfcReceptor = it }
-                    parsedData.facturaExtraida.receptor?.usoCfdi?.let { usoCfdi = it }
-                    parsedData.facturaExtraida.formaPago?.let { formaPago = it }
-                    parsedData.facturaExtraida.metodoPago?.let { metodoPago = it }
+                if (documentType == "Factura") {
+                    val f = parsedData.facturaExtraida
+                    if (f != null) {
+                        if (!f.emisor?.razonSocial.isNullOrBlank()) provider = f.emisor?.razonSocial ?: ""
+                        if (!f.fechaEmision.isNullOrBlank()) date = f.fechaEmision
+                        if (f.total != 0.0) total = f.total.toString()
+                        if (f.subtotal != 0.0) subtotal = f.subtotal.toString()
+                        if (f.ivaTotal != 0.0) iva = f.ivaTotal.toString()
+                        if (f.iepsTotal != 0.0) ieps = f.iepsTotal.toString()
+                        
+                        // specific factura fields
+                        uuid = f.uuid ?: ""
+                        rfcEmisor = f.emisor?.rfc ?: ""
+                        razonSocialEmisor = f.emisor?.razonSocial ?: ""
+                        rfcReceptor = f.receptor?.rfc ?: ""
+                        razonSocialReceptor = f.receptor?.razonSocial ?: ""
+                        usoCfdi = f.receptor?.usoCfdi ?: ""
+                        formaPago = f.formaPago ?: ""
+                        metodoPago = f.metodoPago ?: ""
+                    }
+                } else {
+                    if (!parsedData.proveedor.isNullOrBlank()) provider = parsedData.proveedor
+                    if (!parsedData.fecha.isNullOrBlank()) date = parsedData.fecha
+                    if (parsedData.total != null) total = parsedData.total.toString()
+                    if (parsedData.subtotal != null) subtotal = parsedData.subtotal.toString()
+                    if (parsedData.iva != null) iva = parsedData.iva.toString()
+                    if (parsedData.ieps != null) ieps = parsedData.ieps.toString()
                 }
+                
+                if (!parsedData.link_facturacion.isNullOrBlank()) linkFactura = parsedData.link_facturacion
             } catch (e: Throwable) {
                 val rawError = e.localizedMessage ?: e.javaClass.simpleName
                 val errorMsg = when {

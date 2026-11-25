@@ -56,7 +56,7 @@ data class InvoiceItem(
 @Serializable
 data class Emisor(
     val rfc: String? = null,
-    val razonSocial: String,
+    val razonSocial: String? = null,
     val regimenFiscal: String? = null
 )
 

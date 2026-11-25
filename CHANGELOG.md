@@ -136,3 +136,6 @@
 
 ## Etapa 36: Tolerancia a Latencia (Connection Reset)
 - **Optimización de Red:** Dado que el procesamiento de Facturas CFDI requiere extraer decenas de campos anidados, el tiempo de respuesta del servidor (Groq) se incrementó considerablemente. Se ampliaron los tiempos de espera del cliente HTTP (Timeouts a 120s) y se habilitó un auto-reintento nativo para evitar el error "Connection Reset" causado por cortes de red durante análisis prolongados.
+
+## Etapa 37: Corrección de Mapeo de Datos CFDI
+- **Vinculación de UI para Facturas:** Se corrigió un error arquitectónico donde la interfaz gráfica no mostraba los datos del proveedor al escanear una Factura. Ahora la pantalla mapea correctamente los datos anidados (`emisor.razonSocial`) hacia los campos editables del formulario.
