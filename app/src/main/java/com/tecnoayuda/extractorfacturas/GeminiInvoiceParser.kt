@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import kotlin.math.abs
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
@@ -51,6 +52,76 @@ data class InvoiceItem(
     val importe: Double? = null
 )
 
+@Serializable
+data class Emisor(
+    val rfc: String? = null,
+    val razonSocial: String,
+    val regimenFiscal: String? = null
+)
+
+@Serializable
+data class Receptor(
+    val rfc: String? = null,
+    val razonSocial: String? = null,
+    val usoCfdi: String? = null
+)
+
+@Serializable
+data class ConceptoFactura(
+    val cantidad: Double = 0.0,
+    val unidad: String? = null,
+    val claveProdServ: String? = null,
+    val descripcion: String = "",
+    val valorUnitario: Double = 0.0,
+    val importe: Double = 0.0,
+    val tasaIva: Double = 0.0,
+    val montoIva: Double = 0.0,
+    val tasaIeps: Double = 0.0,
+    val montoIeps: Double = 0.0
+)
+
+@Serializable
+data class FacturaExtraida(
+    val uuid: String? = null,
+    val serie: String? = null,
+    val folio: String? = null,
+    val fechaEmision: String = "",
+    val tipoComprobante: String? = null,
+    val lugarExpedicion: String? = null,
+    
+    val emisor: Emisor? = null,
+    val receptor: Receptor? = null,
+    val conceptos: List<ConceptoFactura>? = null,
+    
+    val subtotal: Double = 0.0,
+    val descuentos: Double = 0.0,
+    val ivaTotal: Double = 0.0,
+    val iepsTotal: Double = 0.0,
+    val retencionesIsr: Double = 0.0,
+    val retencionesIva: Double = 0.0,
+    val total: Double = 0.0,
+    val moneda: String = "MXN",
+    val tipoCambio: Double = 1.0,
+    val formaPago: String? = null,
+    val metodoPago: String? = null,
+    val link_facturacion: String? = null
+) {
+    fun validarCoherenciaMatematica(): Boolean {
+        val sumaEsperada = subtotal - descuentos + ivaTotal + iepsTotal - retencionesIsr - retencionesIva
+        return abs(sumaEsperada - total) <= 0.05
+    }
+}
+
+const val SYSTEM_PROMPT_FACTURAS = """Eres un sistema experto en extracción de datos de CFDI (Facturas Mexicanas). Analiza la imagen y extrae la información solicitada.
+Reglas estables:
+- Extrae el UUID (folio fiscal 36 caracteres), si no hay, usa null.
+- Fecha en formato YYYY-MM-DDTHH:mm:ss o YYYY-MM-DD.
+- Limpia símbolos de moneda ($) y comas (,). Devuelve Doubles puros.
+- Desglosa cada concepto con su IVA (16% u 8% fronterizo) e IEPS si aplica. Si no, pon 0.0.
+- Asigna 0.0 a montos no presentes. No inventes datos.
+Devuelve ÚNICAMENTE un JSON válido que cumpla esta estructura exacta (sin Markdown): 
+{ "uuid": "...", "serie": "...", "folio": "...", "fechaEmision": "...", "tipoComprobante": "...", "lugarExpedicion": "...", "emisor": { "rfc": "...", "razonSocial": "...", "regimenFiscal": "..." }, "receptor": { "rfc": "...", "razonSocial": "...", "usoCfdi": "..." }, "conceptos": [ { "cantidad": 0.0, "unidad": "...", "claveProdServ": "...", "descripcion": "...", "valorUnitario": 0.0, "importe": 0.0, "tasaIva": 0.0, "montoIva": 0.0, "tasaIeps": 0.0, "montoIeps": 0.0 } ], "subtotal": 0.0, "descuentos": 0.0, "ivaTotal": 0.0, "iepsTotal": 0.0, "retencionesIsr": 0.0, "retencionesIva": 0.0, "total": 0.0, "moneda": "MXN", "tipoCambio": 1.0, "formaPago": "...", "metodoPago": "...", "link_facturacion": "..." }"""
+
 class GeminiInvoiceParser {
 
     private val client = OkHttpClient.Builder()
@@ -58,8 +129,8 @@ class GeminiInvoiceParser {
         .readTimeout(60, TimeUnit.SECONDS)
         .build()
 
-    suspend fun parseInvoice(bitmap: Bitmap): InvoiceData = withContext(Dispatchers.IO) {
-        val promptText = """
+    suspend fun parseInvoice(bitmap: Bitmap, documentType: String): InvoiceData = withContext(Dispatchers.IO) {
+        val promptText = if (documentType == "Factura") SYSTEM_PROMPT_FACTURAS else """
             Eres una API estricta de extracción de datos contables de tickets y facturas.
             Tu única tarea es extraer la información solicitada de la imagen y devolverla EXCLUSIVAMENTE en formato JSON.
             No debes incluir saludos, explicaciones, ni etiquetas de código (como ```json o ```).
@@ -164,7 +235,25 @@ class GeminiInvoiceParser {
 
         val jsonLimpio = jsonString.replace("```json", "").replace("```", "").trim()
         val jsonParser = Json { ignoreUnknownKeys = true; explicitNulls = false; coerceInputValues = true }
-        val parsedData = jsonParser.decodeFromString<InvoiceData>(jsonLimpio)
+        
+        val parsedData = if (documentType == "Factura") {
+            val factura = jsonParser.decodeFromString<FacturaExtraida>(jsonLimpio)
+            // val esMatematicamenteValida = factura.validarCoherenciaMatematica()
+            InvoiceData(
+                proveedor = factura.emisor?.razonSocial,
+                fecha = factura.fechaEmision,
+                subtotal = factura.subtotal,
+                iva = factura.ivaTotal,
+                ieps = factura.iepsTotal,
+                total = factura.total,
+                link_facturacion = factura.link_facturacion,
+                metodo_pago = factura.metodoPago,
+                regimen_fiscal = factura.emisor?.regimenFiscal
+            )
+        } else {
+            jsonParser.decodeFromString<InvoiceData>(jsonLimpio)
+        }
+        
         return@withContext if (!qrLink.isNullOrBlank()) {
             parsedData.copy(link_facturacion = qrLink)
         } else {

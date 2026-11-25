@@ -124,3 +124,7 @@
 ## Etapa 31: Adjuntar Fotografías en Exportación por Correo
 - **Compartir Archivos Seguros:** Se modificó la estructura del botón de exportación para utilizar `Intent.ACTION_SEND` (en lugar de SENDTO) con el fin de soportar archivos adjuntos.
 - **Delegación de Permisos:** Ahora, si la factura contiene una fotografía original (URI), la aplicación concede temporalmente permisos de lectura a la aplicación de correo (Gmail, Outlook, etc.) y adjunta la imagen automáticamente junto con el cuerpo de texto, completando el ecosistema de exportación.
+
+## Etapa 34: Arquitectura Avanzada para Facturas (CFDI)
+- **Modelos de Datos CFDI:** Se crearon estructuras de datos serializables especializadas (`FacturaExtraida`, `Emisor`, `ConceptoFactura`) para capturar la complejidad de las facturas mexicanas, incluyendo UUID, sellos y desglose de IEPS/IVA a nivel de artículo.
+- **Doble Flujo Inteligente:** El motor de IA ahora distingue si se está leyendo un Ticket o una Factura y utiliza un prompt especializado con validaciones matemáticas estrictas, asegurando la coherencia entre el subtotal, impuestos y total.

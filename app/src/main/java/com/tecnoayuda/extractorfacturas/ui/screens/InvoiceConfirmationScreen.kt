@@ -61,6 +61,7 @@ import com.tecnoayuda.extractorfacturas.formatearTicketLimpio
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InvoiceConfirmationScreen(
+    documentType: String = "Ticket",
     initialExtractedText: String? = null,
     initialImagenUri: String? = null,
     initialProvider: String = "",
@@ -108,7 +109,7 @@ fun InvoiceConfirmationScreen(
                 }
                 
                 // AI parsing
-                val parsedData = parser.parseInvoice(bitmap)
+                val parsedData = parser.parseInvoice(bitmap, documentType)
                 currentInvoiceData = parsedData
                 if (!parsedData.proveedor.isNullOrBlank()) provider = parsedData.proveedor
                 if (!parsedData.fecha.isNullOrBlank()) date = parsedData.fecha

@@ -38,10 +38,10 @@ object DocumentSelectorRoute : NavKey
 data class FolderListRoute(val documentType: String) : NavKey
 
 @Serializable
-data class InvoiceListRoute(val folderId: Long, val folderName: String) : NavKey
+data class InvoiceListRoute(val folderId: Long, val folderName: String, val documentType: String) : NavKey
 
 @Serializable
-data class AddInvoiceRoute(val folderId: Long, val extractedText: String? = null, val imagenUri: String? = null) : NavKey
+data class AddInvoiceRoute(val folderId: Long, val extractedText: String? = null, val imagenUri: String? = null, val documentType: String) : NavKey
 
 @Serializable
 data class InvoiceDetailRoute(val id: Long) : NavKey
@@ -102,7 +102,7 @@ fun AppNavigation() {
                     folders = folders,
                     onCreateFolder = { name, type -> viewModel.createFolder(name, type) },
                     onFolderClick = { folder ->
-                        backStack.add(InvoiceListRoute(folderId = folder.id, folderName = folder.name))
+                        backStack.add(InvoiceListRoute(folderId = folder.id, folderName = folder.name, documentType = folder.documentType))
                     },
                     onDeleteFolder = { folder -> viewModel.deleteFolder(folder) }
                 )
@@ -115,7 +115,7 @@ fun AppNavigation() {
                 InvoiceListScreen(
                     folderName = route.folderName,
                     invoices = folderInvoices,
-                    onAddInvoiceClick = { text, uri -> backStack.add(AddInvoiceRoute(route.folderId, text, uri)) },
+                    onAddInvoiceClick = { text, uri -> backStack.add(AddInvoiceRoute(route.folderId, text, uri, route.documentType)) },
                     onInvoiceClick = { invoice ->
                         backStack.add(InvoiceDetailRoute(invoice.id))
                     },
@@ -127,6 +127,7 @@ fun AppNavigation() {
                 metadata = ListDetailSceneStrategy.detailPane()
             ) { route ->
                 InvoiceConfirmationScreen(
+                    documentType = route.documentType,
                     initialExtractedText = route.extractedText,
                     initialImagenUri = route.imagenUri,
                     onSaveClick = { provider, date, total, subtotal, iva, ieps, linkFactura, correoDestino, imagenUri, textoCrudo ->
@@ -153,7 +154,9 @@ fun AppNavigation() {
                 metadata = ListDetailSceneStrategy.detailPane()
             ) { route ->
                 val invoice = invoices.find { it.id == route.id }
+                val folder = folders.find { it.id == invoice?.folderId }
                 InvoiceConfirmationScreen(
+                    documentType = folder?.documentType ?: "Ticket",
                     initialExtractedText = invoice?.textoCrudo,
                     initialImagenUri = invoice?.imagenUri,
                     initialProvider = invoice?.provider ?: "",
