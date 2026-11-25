@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import kotlin.math.abs
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -130,6 +131,7 @@ class GeminiInvoiceParser {
         .readTimeout(120, TimeUnit.SECONDS)
         .writeTimeout(120, TimeUnit.SECONDS)
         .retryOnConnectionFailure(true)
+        .protocols(listOf(Protocol.HTTP_1_1))
         .build()
 
     suspend fun parseInvoice(bitmap: Bitmap, documentType: String): InvoiceData = withContext(Dispatchers.IO) {

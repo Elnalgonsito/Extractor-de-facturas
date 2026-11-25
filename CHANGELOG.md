@@ -1,5 +1,8 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 38: Estabilidad de Conexión (HTTP/2 Protocol Error)
+- **Degradación Forzada de Protocolo:** Se detectó que el servidor de Groq cortaba la conexión arrojando `stream was reset: PROTOCOL_ERROR` al procesar cargas útiles grandes de Facturas bajo el protocolo HTTP/2. Se reconfiguró el cliente HTTP para forzar el uso de `HTTP/1.1`, garantizando que la transmisión de datos se mantenga estable y abierta hasta que la IA termine de analizar la factura.
+
 ## Etapa 35: Interfaz y Base de Datos Exclusiva para Facturas
 - **Formulario CFDI Dinámico:** Se construyó una interfaz de usuario especializada que se despliega únicamente cuando el usuario escanea una "Factura". Este formulario incluye campos fiscales como UUID, RFCs, Uso CFDI y Método de Pago.
 - **Esquema de Base de Datos:** Se expandió la entidad `Invoice` en Room (v6) para almacenar permanentemente la metadata fiscal.
