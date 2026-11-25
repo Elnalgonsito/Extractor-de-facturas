@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 41: Auditoría Fiscal Inteligente (Validación SAT)
+- **Reutilización Estratégica de Campos:** Se replanteó el propósito del campo "Link para facturar" dentro del contexto de Facturas. Dado que una factura ya no necesita facturarse, este campo ahora se transforma dinámicamente en "Enlace de Verificación (SAT)". 
+- **Propósito y Beneficios:** Aprovechando que el escáner híbrido extrae el código QR nativo del CFDI, esta URL se utiliza ahora para comprobación fiscal. Se agregó un botón de acceso directo que abre la página oficial del SAT en el navegador, permitiendo al usuario (o al contador) auditar con un solo toque si la factura está "Vigente" o "Cancelada", previniendo fraudes y agilizando la revisión contable sin salir del flujo de trabajo.
+
 ## Etapa 40: Legibilidad de Catálogos CFDI (Forma y Método de Pago)
 - **Corrección de Extracción de Pagos:** Se modificó la instrucción raíz de la Inteligencia Artificial. Anteriormente, la IA extraía las claves de catálogo del SAT para los métodos de pago (ej. `04` o `PUE`). Ahora extrae forzosamente las descripciones legibles para el humano (ej. "Tarjeta de crédito", "Pago en una sola exhibición") para evitar confusiones en la interfaz de usuario.
 

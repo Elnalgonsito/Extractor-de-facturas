@@ -26,6 +26,8 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material.icons.rounded.OpenInNew
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -113,6 +115,7 @@ fun InvoiceConfirmationScreen(
 
     val parser = remember { GeminiInvoiceParser() }
     val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
 
     LaunchedEffect(initialImagenUri) {
         if (!initialImagenUri.isNullOrBlank()) {
@@ -371,7 +374,22 @@ fun InvoiceConfirmationScreen(
             OutlinedTextField(
                 value = linkFactura,
                 onValueChange = { linkFactura = it },
-                label = { Text("Link para facturar") },
+                label = { 
+                    Text(if (documentType == "Factura") "Enlace de Verificación (SAT)" else "Link para facturar") 
+                },
+                trailingIcon = {
+                    if (linkFactura.isNotBlank()) {
+                        IconButton(onClick = {
+                            try {
+                                uriHandler.openUri(linkFactura)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }) {
+                            Icon(imageVector = Icons.Rounded.OpenInNew, contentDescription = "Abrir enlace")
+                        }
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.large
             )
