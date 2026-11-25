@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 39: Refinamiento de Interfaz para Facturas
+- **Corrección de Valores Cero (IEPS):** Se corrigió un error lógico en la pantalla donde los impuestos con valor `0.0` (como el IEPS en gasolina estándar) se ocultaban y dejaban el campo en blanco. Ahora se muestran explícitamente como `0.0`.
+- **Formato de UUID:** Se ajustó el campo de texto del Folio Fiscal para permitir múltiples líneas, evitando cortes extraños en la cadena de 36 caracteres.
+
 ## Etapa 38: Estabilidad de Conexión (HTTP/2 Protocol Error)
 - **Degradación Forzada de Protocolo:** Se detectó que el servidor de Groq cortaba la conexión arrojando `stream was reset: PROTOCOL_ERROR` al procesar cargas útiles grandes de Facturas bajo el protocolo HTTP/2. Se reconfiguró el cliente HTTP para forzar el uso de `HTTP/1.1`, garantizando que la transmisión de datos se mantenga estable y abierta hasta que la IA termine de analizar la factura.
 

@@ -137,10 +137,10 @@ fun InvoiceConfirmationScreen(
                     if (f != null) {
                         if (!f.emisor?.razonSocial.isNullOrBlank()) provider = f.emisor?.razonSocial ?: ""
                         if (!f.fechaEmision.isNullOrBlank()) date = f.fechaEmision
-                        if (f.total != 0.0) total = f.total.toString()
-                        if (f.subtotal != 0.0) subtotal = f.subtotal.toString()
-                        if (f.ivaTotal != 0.0) iva = f.ivaTotal.toString()
-                        if (f.iepsTotal != 0.0) ieps = f.iepsTotal.toString()
+                        total = f.total.toString()
+                        subtotal = f.subtotal.toString()
+                        iva = f.ivaTotal.toString()
+                        ieps = f.iepsTotal.toString()
                         
                         // specific factura fields
                         uuid = f.uuid ?: ""
@@ -311,7 +311,9 @@ fun InvoiceConfirmationScreen(
                     onValueChange = { uuid = it },
                     label = { Text("UUID") },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.large
+                    shape = MaterialTheme.shapes.large,
+                    minLines = 2,
+                    maxLines = 3
                 )
                 OutlinedTextField(
                     value = rfcEmisor,
