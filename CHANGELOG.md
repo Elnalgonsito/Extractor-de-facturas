@@ -1,5 +1,8 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 40: Legibilidad de Catálogos CFDI (Forma y Método de Pago)
+- **Corrección de Extracción de Pagos:** Se modificó la instrucción raíz de la Inteligencia Artificial. Anteriormente, la IA extraía las claves de catálogo del SAT para los métodos de pago (ej. `04` o `PUE`). Ahora extrae forzosamente las descripciones legibles para el humano (ej. "Tarjeta de crédito", "Pago en una sola exhibición") para evitar confusiones en la interfaz de usuario.
+
 ## Etapa 39: Refinamiento de Interfaz para Facturas
 - **Corrección de Valores Cero (IEPS):** Se corrigió un error lógico en la pantalla donde los impuestos con valor `0.0` (como el IEPS en gasolina estándar) se ocultaban y dejaban el campo en blanco. Ahora se muestran explícitamente como `0.0`.
 - **Formato de UUID:** Se ajustó el campo de texto del Folio Fiscal para permitir múltiples líneas, evitando cortes extraños en la cadena de 36 caracteres.

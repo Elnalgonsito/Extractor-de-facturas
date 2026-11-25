@@ -118,8 +118,9 @@ const val SYSTEM_PROMPT_FACTURAS = """Eres un sistema experto en extracción de 
 Reglas estables:
 - Extrae el UUID (folio fiscal 36 caracteres), si no hay, usa null.
 - Fecha en formato YYYY-MM-DDTHH:mm:ss o YYYY-MM-DD.
-- Limpia símbolos de moneda ($) y comas (,). Devuelve Doubles puros.
+- Limpia símbolos de moneda (${'$'}) y comas (,). Devuelve Doubles puros.
 - Desglosa cada concepto con su IVA (16% u 8% fronterizo) e IEPS si aplica. Si no, pon 0.0.
+- Para 'formaPago' y 'metodoPago', extrae la DESCRIPCIÓN en texto claro (ej. "Tarjeta de crédito", "Transferencia", "Pago en una sola exhibición"), NO extraigas las claves numéricas (01, 03, 04) ni las abreviaciones (PUE, PPD).
 - Asigna 0.0 a montos no presentes. No inventes datos.
 Devuelve ÚNICAMENTE un JSON válido que cumpla esta estructura exacta (sin Markdown): 
 { "uuid": "...", "serie": "...", "folio": "...", "fechaEmision": "...", "tipoComprobante": "...", "lugarExpedicion": "...", "emisor": { "rfc": "...", "razonSocial": "...", "regimenFiscal": "..." }, "receptor": { "rfc": "...", "razonSocial": "...", "usoCfdi": "..." }, "conceptos": [ { "cantidad": 0.0, "unidad": "...", "claveProdServ": "...", "descripcion": "...", "valorUnitario": 0.0, "importe": 0.0, "tasaIva": 0.0, "montoIva": 0.0, "tasaIeps": 0.0, "montoIeps": 0.0 } ], "subtotal": 0.0, "descuentos": 0.0, "ivaTotal": 0.0, "iepsTotal": 0.0, "retencionesIsr": 0.0, "retencionesIva": 0.0, "total": 0.0, "moneda": "MXN", "tipoCambio": 1.0, "formaPago": "...", "metodoPago": "...", "link_facturacion": "..." }"""
