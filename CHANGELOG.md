@@ -133,3 +133,6 @@
 ## Etapa 34: Arquitectura Avanzada para Facturas (CFDI)
 - **Modelos de Datos CFDI:** Se crearon estructuras de datos serializables especializadas (`FacturaExtraida`, `Emisor`, `ConceptoFactura`) para capturar la complejidad de las facturas mexicanas, incluyendo UUID, sellos y desglose de IEPS/IVA a nivel de artículo.
 - **Doble Flujo Inteligente:** El motor de IA ahora distingue si se está leyendo un Ticket o una Factura y utiliza un prompt especializado con validaciones matemáticas estrictas, asegurando la coherencia entre el subtotal, impuestos y total.
+
+## Etapa 36: Tolerancia a Latencia (Connection Reset)
+- **Optimización de Red:** Dado que el procesamiento de Facturas CFDI requiere extraer decenas de campos anidados, el tiempo de respuesta del servidor (Groq) se incrementó considerablemente. Se ampliaron los tiempos de espera del cliente HTTP (Timeouts a 120s) y se habilitó un auto-reintento nativo para evitar el error "Connection Reset" causado por cortes de red durante análisis prolongados.

@@ -126,8 +126,10 @@ Devuelve ÚNICAMENTE un JSON válido que cumpla esta estructura exacta (sin Mark
 class GeminiInvoiceParser {
 
     private val client = OkHttpClient.Builder()
-        .connectTimeout(60, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
+        .connectTimeout(120, TimeUnit.SECONDS)
+        .readTimeout(120, TimeUnit.SECONDS)
+        .writeTimeout(120, TimeUnit.SECONDS)
+        .retryOnConnectionFailure(true)
         .build()
 
     suspend fun parseInvoice(bitmap: Bitmap, documentType: String): InvoiceData = withContext(Dispatchers.IO) {
@@ -220,41 +222,56 @@ class GeminiInvoiceParser {
             .post(payload.toString().toRequestBody("application/json".toMediaType()))
             .build()
 
-        val response = client.newCall(request).execute()
-        val responseBody = response.body?.string() ?: throw Exception("Empty response from Groq")
-
-        if (!response.isSuccessful) {
-            throw Exception("Groq Error: ${response.code} - $responseBody")
-        }
-
-        // Extract assistant message
-        val root = JSONObject(responseBody)
-        val choices = root.getJSONArray("choices")
-        val firstChoice = choices.getJSONObject(0)
-        val messageObj = firstChoice.getJSONObject("message")
-        val jsonString = messageObj.getString("content")
-
-        val jsonLimpio = jsonString.replace("```json", "").replace("```", "").trim()
-        val jsonParser = Json { ignoreUnknownKeys = true; explicitNulls = false; coerceInputValues = true }
+        var currentAttempt = 0
+        val maxAttempts = 3
+        var finalParsedData: InvoiceData? = null
         
-        val parsedData = if (documentType == "Factura") {
-            val factura = jsonParser.decodeFromString<FacturaExtraida>(jsonLimpio)
-            // val esMatematicamenteValida = factura.validarCoherenciaMatematica()
-            InvoiceData(
-                proveedor = factura.emisor?.razonSocial,
-                fecha = factura.fechaEmision,
-                subtotal = factura.subtotal,
-                iva = factura.ivaTotal,
-                ieps = factura.iepsTotal,
-                total = factura.total,
-                link_facturacion = factura.link_facturacion,
-                metodo_pago = factura.metodoPago,
-                regimen_fiscal = factura.emisor?.regimenFiscal,
-                facturaExtraida = factura
-            )
-        } else {
-            jsonParser.decodeFromString<InvoiceData>(jsonLimpio)
+        while (true) {
+            try {
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string() ?: throw Exception("Empty response from Groq")
+
+                if (!response.isSuccessful) {
+                    throw Exception("Groq Error: ${response.code} - $responseBody")
+                }
+
+                // Extract assistant message
+                val root = JSONObject(responseBody)
+                val choices = root.getJSONArray("choices")
+                val firstChoice = choices.getJSONObject(0)
+                val messageObj = firstChoice.getJSONObject("message")
+                val jsonString = messageObj.getString("content")
+
+                val jsonLimpio = jsonString.replace("```json", "").replace("```", "").trim()
+                val jsonParser = Json { ignoreUnknownKeys = true; explicitNulls = false; coerceInputValues = true }
+                
+                finalParsedData = if (documentType == "Factura") {
+                    val factura = jsonParser.decodeFromString<FacturaExtraida>(jsonLimpio)
+                    // val esMatematicamenteValida = factura.validarCoherenciaMatematica()
+                    InvoiceData(
+                        proveedor = factura.emisor?.razonSocial,
+                        fecha = factura.fechaEmision,
+                        subtotal = factura.subtotal,
+                        iva = factura.ivaTotal,
+                        ieps = factura.iepsTotal,
+                        total = factura.total,
+                        link_facturacion = factura.link_facturacion,
+                        metodo_pago = factura.metodoPago,
+                        regimen_fiscal = factura.emisor?.regimenFiscal,
+                        facturaExtraida = factura
+                    )
+                } else {
+                    jsonParser.decodeFromString<InvoiceData>(jsonLimpio)
+                }
+                break
+            } catch (e: Exception) {
+                currentAttempt++
+                if (currentAttempt >= maxAttempts) throw e
+                kotlinx.coroutines.delay(5000L) // Wait 5s before retrying connection resets
+            }
         }
+        
+        val parsedData = finalParsedData ?: throw Exception("Failed to parse invoice")
         
         return@withContext if (!qrLink.isNullOrBlank()) {
             parsedData.copy(link_facturacion = qrLink)
