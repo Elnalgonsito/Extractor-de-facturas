@@ -36,7 +36,8 @@ data class InvoiceData(
     val ieps: Double? = null,
     val impuestos: List<InvoiceTax>? = null,
     val total: Double? = null,
-    val link_facturacion: String? = null
+    val link_facturacion: String? = null,
+    val facturaExtraida: FacturaExtraida? = null
 )
 
 @Serializable
@@ -248,7 +249,8 @@ class GeminiInvoiceParser {
                 total = factura.total,
                 link_facturacion = factura.link_facturacion,
                 metodo_pago = factura.metodoPago,
-                regimen_fiscal = factura.emisor?.regimenFiscal
+                regimen_fiscal = factura.emisor?.regimenFiscal,
+                facturaExtraida = factura
             )
         } else {
             jsonParser.decodeFromString<InvoiceData>(jsonLimpio)
@@ -336,4 +338,31 @@ fun formatearTicketLimpio(jsonIA: String?, lineasEspaciado: Int = 1): String {
     } catch (e: Exception) {
         "Error al procesar los datos limpios"
     }
+}
+
+fun generarResumenFactura(factura: FacturaExtraida, lineasEspaciado: Int = 1): String {
+    val space = "\n".repeat(lineasEspaciado)
+    val b = StringBuilder()
+    factura.uuid?.let { b.append("UUID: $it").append(space) }
+    b.append("Emisor: ${factura.emisor?.razonSocial ?: "N/A"} (${factura.emisor?.rfc ?: "N/A"})").append(space)
+    b.append("Receptor: ${factura.receptor?.razonSocial ?: "N/A"} (${factura.receptor?.rfc ?: "N/A"})").append(space)
+    factura.receptor?.usoCfdi?.let { b.append("Uso CFDI: $it").append(space) }
+    b.append("Fecha: ${factura.fechaEmision}").append(space)
+    
+    if (!factura.conceptos.isNullOrEmpty()) {
+        b.append("Conceptos:").append(space)
+        factura.conceptos.forEach { c ->
+            b.append("- ${c.cantidad}x ${c.descripcion} - $${c.importe}").append(space)
+        }
+    }
+    
+    b.append("Subtotal: $${factura.subtotal}").append(space)
+    b.append("IVA: $${factura.ivaTotal}").append(space)
+    b.append("IEPS: $${factura.iepsTotal}").append(space)
+    b.append("Total: $${factura.total}").append(space)
+    
+    factura.formaPago?.let { b.append("Forma Pago: $it").append(space) }
+    factura.metodoPago?.let { b.append("Método Pago: $it").append(space) }
+    
+    return b.toString().trimEnd()
 }

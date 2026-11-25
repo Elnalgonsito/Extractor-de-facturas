@@ -17,5 +17,12 @@ data class Invoice(
     val subtotal: Double? = null,
     val iva: Double? = null,
     val ieps: Double? = null,
-    val folderId: Long = 0L
+    val folderId: Long = 0L,
+    val documentType: String = "Ticket",
+    val uuid: String? = null,
+    val rfcEmisor: String? = null,
+    val rfcReceptor: String? = null,
+    val usoCfdi: String? = null,
+    val formaPago: String? = null,
+    val metodoPago: String? = null
 )

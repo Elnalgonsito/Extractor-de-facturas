@@ -56,11 +56,15 @@ import coil.compose.AsyncImage
 import com.tecnoayuda.extractorfacturas.GeminiInvoiceParser
 import com.tecnoayuda.extractorfacturas.InvoiceData
 import com.tecnoayuda.extractorfacturas.formatearTicketLimpio
+import com.tecnoayuda.extractorfacturas.generarResumenFactura
+import com.tecnoayuda.extractorfacturas.data.local.Invoice
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InvoiceConfirmationScreen(
+    invoiceId: Long = 0L,
+    folderId: Long = 0L,
     documentType: String = "Ticket",
     initialExtractedText: String? = null,
     initialImagenUri: String? = null,
@@ -72,9 +76,15 @@ fun InvoiceConfirmationScreen(
     initialIeps: String = "",
     initialLinkFactura: String? = null,
     initialCorreoDestino: String? = null,
+    initialUuid: String? = null,
+    initialRfcEmisor: String? = null,
+    initialRfcReceptor: String? = null,
+    initialUsoCfdi: String? = null,
+    initialFormaPago: String? = null,
+    initialMetodoPago: String? = null,
     modifier: Modifier = Modifier,
     onDeleteClick: (() -> Unit)? = null,
-    onSaveClick: (provider: String, date: String, total: String, subtotal: String, iva: String, ieps: String, linkFactura: String?, correoDestino: String?, imagenUri: String?, textoCrudo: String?) -> Unit,
+    onSaveClick: (Invoice) -> Unit,
     onBackClick: () -> Unit
 ) {
     var provider by remember(initialProvider) { mutableStateOf(initialProvider) }
@@ -85,6 +95,14 @@ fun InvoiceConfirmationScreen(
     var ieps by remember(initialIeps) { mutableStateOf(initialIeps) }
     var linkFactura by remember(initialLinkFactura) { mutableStateOf(initialLinkFactura ?: "") }
     var correoDestino by remember(initialCorreoDestino) { mutableStateOf(initialCorreoDestino ?: "") }
+    
+    var uuid by remember(initialUuid) { mutableStateOf(initialUuid ?: "") }
+    var rfcEmisor by remember(initialRfcEmisor) { mutableStateOf(initialRfcEmisor ?: "") }
+    var rfcReceptor by remember(initialRfcReceptor) { mutableStateOf(initialRfcReceptor ?: "") }
+    var usoCfdi by remember(initialUsoCfdi) { mutableStateOf(initialUsoCfdi ?: "") }
+    var formaPago by remember(initialFormaPago) { mutableStateOf(initialFormaPago ?: "") }
+    var metodoPago by remember(initialMetodoPago) { mutableStateOf(initialMetodoPago ?: "") }
+    
     var isLoading by remember { mutableStateOf(false) }
     var extractedText by remember(initialExtractedText) { mutableStateOf(initialExtractedText ?: "") }
     var currentInvoiceData by remember { mutableStateOf<InvoiceData?>(null) }
@@ -118,6 +136,15 @@ fun InvoiceConfirmationScreen(
                 if (parsedData.iva != null) iva = parsedData.iva.toString()
                 if (parsedData.ieps != null) ieps = parsedData.ieps.toString()
                 if (!parsedData.link_facturacion.isNullOrBlank()) linkFactura = parsedData.link_facturacion
+                
+                if (parsedData.facturaExtraida != null) {
+                    parsedData.facturaExtraida.uuid?.let { uuid = it }
+                    parsedData.facturaExtraida.emisor?.rfc?.let { rfcEmisor = it }
+                    parsedData.facturaExtraida.receptor?.rfc?.let { rfcReceptor = it }
+                    parsedData.facturaExtraida.receptor?.usoCfdi?.let { usoCfdi = it }
+                    parsedData.facturaExtraida.formaPago?.let { formaPago = it }
+                    parsedData.facturaExtraida.metodoPago?.let { metodoPago = it }
+                }
             } catch (e: Throwable) {
                 val rawError = e.localizedMessage ?: e.javaClass.simpleName
                 val errorMsg = when {
@@ -261,13 +288,62 @@ fun InvoiceConfirmationScreen(
                 shape = MaterialTheme.shapes.large
             )
             
-            val jsonGeneradoPorIA = currentInvoiceData?.let {
-                kotlinx.serialization.json.Json.encodeToString(com.tecnoayuda.extractorfacturas.InvoiceData.serializer(), it)
+            if (documentType == "Factura") {
+                OutlinedTextField(
+                    value = uuid,
+                    onValueChange = { uuid = it },
+                    label = { Text("UUID") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large
+                )
+                OutlinedTextField(
+                    value = rfcEmisor,
+                    onValueChange = { rfcEmisor = it },
+                    label = { Text("RFC Emisor") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large
+                )
+                OutlinedTextField(
+                    value = rfcReceptor,
+                    onValueChange = { rfcReceptor = it },
+                    label = { Text("RFC Receptor") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large
+                )
+                OutlinedTextField(
+                    value = usoCfdi,
+                    onValueChange = { usoCfdi = it },
+                    label = { Text("Uso CFDI") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large
+                )
+                OutlinedTextField(
+                    value = formaPago,
+                    onValueChange = { formaPago = it },
+                    label = { Text("Forma Pago") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large
+                )
+                OutlinedTextField(
+                    value = metodoPago,
+                    onValueChange = { metodoPago = it },
+                    label = { Text("Método Pago") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large
+                )
             }
-            val textToDisplay = jsonGeneradoPorIA?.let { formatearTicketLimpio(it, 1) } ?: parsingStatus
+            
+            val textToDisplay = if (documentType == "Factura" && currentInvoiceData?.facturaExtraida != null) {
+                generarResumenFactura(currentInvoiceData!!.facturaExtraida!!)
+            } else {
+                val jsonGeneradoPorIA = currentInvoiceData?.let {
+                    kotlinx.serialization.json.Json.encodeToString(com.tecnoayuda.extractorfacturas.InvoiceData.serializer(), it)
+                }
+                jsonGeneradoPorIA?.let { formatearTicketLimpio(it, 1) } ?: parsingStatus
+            }
             if (textToDisplay.isNotEmpty()) {
                 Text(
-                    text = "Resumen del Ticket:\n\n$textToDisplay",
+                    text = "Resumen:\n\n$textToDisplay",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -293,18 +369,28 @@ fun InvoiceConfirmationScreen(
 
             Button(
                 onClick = {
-                    onSaveClick(
-                        provider,
-                        date,
-                        total,
-                        subtotal,
-                        iva,
-                        ieps,
-                        linkFactura.takeIf { it.isNotBlank() },
-                        correoDestino.takeIf { it.isNotBlank() },
-                        initialImagenUri,
-                        extractedText.takeIf { it.isNotBlank() }
+                    val invoice = Invoice(
+                        id = invoiceId,
+                        folderId = folderId,
+                        date = date,
+                        provider = provider,
+                        totalAmount = total.toDoubleOrNull() ?: 0.0,
+                        imagenUri = initialImagenUri,
+                        textoCrudo = extractedText.takeIf { it.isNotBlank() },
+                        linkFactura = linkFactura.takeIf { it.isNotBlank() },
+                        correoDestino = correoDestino.takeIf { it.isNotBlank() },
+                        subtotal = subtotal.toDoubleOrNull(),
+                        iva = iva.toDoubleOrNull(),
+                        ieps = ieps.toDoubleOrNull(),
+                        documentType = documentType,
+                        uuid = uuid.takeIf { it.isNotBlank() },
+                        rfcEmisor = rfcEmisor.takeIf { it.isNotBlank() },
+                        rfcReceptor = rfcReceptor.takeIf { it.isNotBlank() },
+                        usoCfdi = usoCfdi.takeIf { it.isNotBlank() },
+                        formaPago = formaPago.takeIf { it.isNotBlank() },
+                        metodoPago = metodoPago.takeIf { it.isNotBlank() }
                     )
+                    onSaveClick(invoice)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -427,7 +513,7 @@ fun InvoiceConfirmationScreen(
 fun InvoiceConfirmationScreenPreview() {
     MaterialTheme {
         InvoiceConfirmationScreen(
-            onSaveClick = { _, _, _, _, _, _, _, _, _, _ -> },
+            onSaveClick = {},
             onBackClick = {}
         )
     }

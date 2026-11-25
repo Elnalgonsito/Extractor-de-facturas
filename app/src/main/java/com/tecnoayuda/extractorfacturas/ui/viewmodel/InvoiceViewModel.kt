@@ -62,32 +62,7 @@ class InvoiceViewModel(
         }
     }
 
-    fun saveInvoice(
-        date: String,
-        provider: String,
-        totalAmount: Double,
-        imagenUri: String?,
-        textoCrudo: String?,
-        linkFactura: String?,
-        correoDestino: String?,
-        subtotal: Double?,
-        iva: Double?,
-        ieps: Double?,
-        folderId: Long
-    ) {
-        val invoice = Invoice(
-            date = date,
-            provider = provider,
-            totalAmount = totalAmount,
-            imagenUri = imagenUri,
-            textoCrudo = textoCrudo,
-            linkFactura = linkFactura,
-            correoDestino = correoDestino,
-            subtotal = subtotal,
-            iva = iva,
-            ieps = ieps,
-            folderId = folderId
-        )
+    fun saveInvoice(invoice: Invoice) {
         viewModelScope.launch {
             repository.insertInvoice(invoice)
         }

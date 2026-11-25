@@ -1,5 +1,10 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 35: Interfaz y Base de Datos Exclusiva para Facturas
+- **Formulario CFDI Dinámico:** Se construyó una interfaz de usuario especializada que se despliega únicamente cuando el usuario escanea una "Factura". Este formulario incluye campos fiscales como UUID, RFCs, Uso CFDI y Método de Pago.
+- **Esquema de Base de Datos:** Se expandió la entidad `Invoice` en Room (v6) para almacenar permanentemente la metadata fiscal.
+- **Resumen Contable:** Se implementó un generador de reportes específico para Facturas que formatea la información para los correos electrónicos.
+
 ## Etapa 33: Soporte Multi-Documento (Tickets y Facturas)
 - **Pantalla de Selección de Documentos:** Se diseñó y construyó una nueva pantalla de inicio que le pregunta al usuario qué tipo de documento desea procesar (Ticket o Factura), preparando el terreno para flujos especializados.
 - **Aislamiento de Bases de Datos:** Se modificó la tabla de Carpetas (`Folders`) en Room para incluir el tipo de documento. Ahora, las carpetas de "Tickets" y "Facturas" viven en mundos separados y no se mezclan en la interfaz.

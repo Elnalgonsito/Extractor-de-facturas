@@ -127,23 +127,12 @@ fun AppNavigation() {
                 metadata = ListDetailSceneStrategy.detailPane()
             ) { route ->
                 InvoiceConfirmationScreen(
+                    folderId = route.folderId,
                     documentType = route.documentType,
                     initialExtractedText = route.extractedText,
                     initialImagenUri = route.imagenUri,
-                    onSaveClick = { provider, date, total, subtotal, iva, ieps, linkFactura, correoDestino, imagenUri, textoCrudo ->
-                        viewModel.saveInvoice(
-                            date = date,
-                            provider = provider,
-                            totalAmount = total.toDoubleOrNull() ?: 0.0,
-                            imagenUri = imagenUri,
-                            textoCrudo = textoCrudo,
-                            linkFactura = linkFactura,
-                            correoDestino = correoDestino,
-                            subtotal = subtotal.toDoubleOrNull(),
-                            iva = iva.toDoubleOrNull(),
-                            ieps = ieps.toDoubleOrNull(),
-                            folderId = route.folderId
-                        )
+                    onSaveClick = { invoice ->
+                        viewModel.saveInvoice(invoice)
                         backStack.removeLastOrNull()
                     },
                     onBackClick = { backStack.removeLastOrNull() }
@@ -156,6 +145,8 @@ fun AppNavigation() {
                 val invoice = invoices.find { it.id == route.id }
                 val folder = folders.find { it.id == invoice?.folderId }
                 InvoiceConfirmationScreen(
+                    invoiceId = invoice?.id ?: 0L,
+                    folderId = invoice?.folderId ?: 0L,
                     documentType = folder?.documentType ?: "Ticket",
                     initialExtractedText = invoice?.textoCrudo,
                     initialImagenUri = invoice?.imagenUri,
@@ -167,24 +158,18 @@ fun AppNavigation() {
                     initialIeps = invoice?.ieps?.toString() ?: "",
                     initialLinkFactura = invoice?.linkFactura,
                     initialCorreoDestino = invoice?.correoDestino,
+                    initialUuid = invoice?.uuid,
+                    initialRfcEmisor = invoice?.rfcEmisor,
+                    initialRfcReceptor = invoice?.rfcReceptor,
+                    initialUsoCfdi = invoice?.usoCfdi,
+                    initialFormaPago = invoice?.formaPago,
+                    initialMetodoPago = invoice?.metodoPago,
                     onDeleteClick = {
                         invoice?.let { viewModel.deleteInvoice(it) }
                         backStack.removeLastOrNull()
                     },
-                    onSaveClick = { provider, date, total, subtotal, iva, ieps, linkFactura, correoDestino, imagenUri, textoCrudo ->
-                        viewModel.saveInvoice(
-                            date = date,
-                            provider = provider,
-                            totalAmount = total.toDoubleOrNull() ?: 0.0,
-                            imagenUri = imagenUri,
-                            textoCrudo = textoCrudo,
-                            linkFactura = linkFactura,
-                            correoDestino = correoDestino,
-                            subtotal = subtotal.toDoubleOrNull(),
-                            iva = iva.toDoubleOrNull(),
-                            ieps = ieps.toDoubleOrNull(),
-                            folderId = invoice?.folderId ?: 0L
-                        )
+                    onSaveClick = { invoice ->
+                        viewModel.saveInvoice(invoice)
                         backStack.removeLastOrNull()
                     },
                     onBackClick = { backStack.removeLastOrNull() }
