@@ -9,6 +9,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material3.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,26 +42,34 @@ fun FolderListScreen(
             }
         }
     ) { padding ->
-        if (folders.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                Text("No folders yet. Create one!")
-            }
-        } else {
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
-                items(folders) { folder ->
-                    ListItem(
-                        headlineContent = { Text(folder.name) },
-                        leadingContent = {
-                            Icon(Icons.Default.Folder, contentDescription = null)
-                        },
-                        trailingContent = {
-                            IconButton(onClick = { onDeleteFolder(folder) }) {
-                                Icon(Icons.Default.Delete, contentDescription = "Delete Folder")
-                            }
-                        },
-                        modifier = Modifier.clickable { onFolderClick(folder) }
-                    )
-                    HorizontalDivider()
+        var isVisible by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) { isVisible = true }
+
+        AnimatedVisibility(
+            visible = isVisible,
+            enter = fadeIn() + androidx.compose.animation.slideInVertically(initialOffsetY = { 50 })
+        ) {
+            if (folders.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                    Text("No folders yet. Create one!")
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
+                    items(folders) { folder ->
+                        ListItem(
+                            headlineContent = { Text(folder.name) },
+                            leadingContent = {
+                                Icon(Icons.Default.Folder, contentDescription = null)
+                            },
+                            trailingContent = {
+                                IconButton(onClick = { onDeleteFolder(folder) }) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Delete Folder")
+                                }
+                            },
+                            modifier = Modifier.clickable { onFolderClick(folder) }
+                        )
+                        HorizontalDivider()
+                    }
                 }
             }
         }

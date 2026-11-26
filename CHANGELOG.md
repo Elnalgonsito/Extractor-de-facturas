@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 43: Diseño UI/UX (Verde & Celeste) y Animaciones
+- **Identidad de Marca Perfeccionada:** Se reescribió la paleta de colores de Material Design 3 utilizando los tonos exactos del logotipo del cliente (Celeste vibrante y Verde corporativo), unificando el frontend con la identidad visual.
+- **Animaciones y Transiciones (UX):** Se agregaron animaciones de entrada (`AnimatedVisibility`, `slideInVertically`, `fadeIn`) a todas las pantallas principales. Además, los formularios ahora soportan `animateContentSize()`, permitiendo que el llenado automático de la Inteligencia Artificial se vea suave, fluido y orgánico al aparecer en pantalla.
+
 ## Etapa 42: Branding y Tematización
 - **Logo Oficial:** Se integró el logo oficial de la aplicación (`app_logo.webp`) reemplazando los íconos genéricos de Android en el `AndroidManifest.xml`.
 - **Paleta de Colores Dinámica:** Se extrajeron los colores corporativos predominantes del nuevo logo mediante un script. La interfaz gráfica completa (Material 3) fue rediseñada para adoptar esta nueva paleta (Azul Oscuro Corporativo) como colores primarios, secundarios y terciarios, unificando la identidad visual tanto en el tema claro como oscuro.

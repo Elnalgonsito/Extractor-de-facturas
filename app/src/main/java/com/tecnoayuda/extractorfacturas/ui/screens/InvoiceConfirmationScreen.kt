@@ -50,6 +50,10 @@ import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.Color
@@ -210,19 +214,27 @@ fun InvoiceConfirmationScreen(
             )
         }
     ) { innerPadding ->
-        val scrollState = rememberScrollState()
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(24.dp)
-                .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+        var isVisible by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) { isVisible = true }
+
+        AnimatedVisibility(
+            visible = isVisible,
+            enter = fadeIn() + slideInVertically(initialOffsetY = { 50 }),
+            modifier = Modifier.padding(innerPadding).fillMaxSize()
         ) {
-            Text(
-                text = "Confirm details",
-                style = MaterialTheme.typography.headlineMedium
-            )
+            val scrollState = rememberScrollState()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp)
+                    .verticalScroll(scrollState)
+                    .animateContentSize(),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                Text(
+                    text = "Confirm details",
+                    style = MaterialTheme.typography.headlineMedium
+                )
             
             if (isLoading) {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -487,6 +499,7 @@ fun InvoiceConfirmationScreen(
             ) {
                 Text("Enviar por Correo", style = MaterialTheme.typography.titleMedium)
             }
+        }
         }
     }
 
