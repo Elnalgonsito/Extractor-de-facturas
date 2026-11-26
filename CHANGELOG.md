@@ -1,5 +1,8 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 47: Generación de Instalable (APK)
+- **Distribución de la App:** Se compiló y generó el archivo instalable de la aplicación (`ExtractorDeFacturas.apk`). Este archivo fue agregado al repositorio en la carpeta `apk_descargable` para permitir la descarga e instalación directa en cualquier dispositivo Android sin necesidad de utilizar el entorno de desarrollo (Android Studio).
+
 ## Etapa 46: Corrección de Colores Dinámicos (Material You)
 - **Forzado de Identidad de Marca:** Se detectó que los dispositivos modernos (Android 12+) estaban sobrescribiendo los colores de la aplicación utilizando la paleta de colores del fondo de pantalla del usuario (Dynamic Color / Material You), lo que resultaba en tonos lavanda y azules opacos. Se deshabilitó el color dinámico para forzar al sistema operativo a respetar el Verde Neón (`#1DF2A4`) y el Cian (`#02B8DF`) de la marca original en todas las pantallas.
 
