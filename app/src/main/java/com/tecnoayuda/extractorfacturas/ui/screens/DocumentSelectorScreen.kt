@@ -17,7 +17,15 @@ fun DocumentSelectorScreen(
     onSelectDocumentType: (String) -> Unit
 ) {
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Extractor de Documentos") }) }
+        topBar = { 
+            TopAppBar(
+                title = { Text("Extractor de Documentos") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) 
+        }
     ) { innerPadding ->
         var isVisible by remember { mutableStateOf(false) }
         LaunchedEffect(Unit) { isVisible = true }
@@ -37,7 +45,11 @@ fun DocumentSelectorScreen(
                 
                 ElevatedCard(
                     onClick = { onSelectDocumentType("Ticket") },
-                    modifier = Modifier.fillMaxWidth().height(120.dp).animateContentSize()
+                    modifier = Modifier.fillMaxWidth().height(120.dp).animateContentSize(),
+                    colors = CardDefaults.elevatedCardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -52,7 +64,11 @@ fun DocumentSelectorScreen(
                 
                 ElevatedCard(
                     onClick = { onSelectDocumentType("Factura") },
-                    modifier = Modifier.fillMaxWidth().height(120.dp).animateContentSize()
+                    modifier = Modifier.fillMaxWidth().height(120.dp).animateContentSize(),
+                    colors = CardDefaults.elevatedCardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {

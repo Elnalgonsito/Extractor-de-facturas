@@ -1,5 +1,8 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 44: Forzado de Identidad Visual (Color Theming)
+- **Aplicación de Paleta:** Se detectó que el tema Material 3 heredaba colores base del sistema por defecto. Se modificó el código de todas las pantallas para inyectar forzosamente los colores "Celeste" y "Verde" en los componentes clave (Barras superiores, Botones Flotantes, y Tarjetas), haciendo que la aplicación finalmente refleje la identidad de la marca.
+
 ## Etapa 43: Diseño UI/UX (Verde & Celeste) y Animaciones
 - **Identidad de Marca Perfeccionada:** Se reescribió la paleta de colores de Material Design 3 utilizando los tonos exactos del logotipo del cliente (Celeste vibrante y Verde corporativo), unificando el frontend con la identidad visual.
 - **Animaciones y Transiciones (UX):** Se agregaron animaciones de entrada (`AnimatedVisibility`, `slideInVertically`, `fadeIn`) a todas las pantallas principales. Además, los formularios ahora soportan `animateContentSize()`, permitiendo que el llenado automático de la Inteligencia Artificial se vea suave, fluido y orgánico al aparecer en pantalla.
