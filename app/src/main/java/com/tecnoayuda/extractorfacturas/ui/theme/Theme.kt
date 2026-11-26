@@ -11,23 +11,36 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+import androidx.compose.ui.graphics.Color
+
 private val DarkColorScheme = darkColorScheme(
-    primary = CelestePrimaryDark,
-    onPrimary = CelesteOnPrimaryDark,
-    primaryContainer = CelestePrimaryContainerDark,
-    secondary = VerdeSecondaryDark,
-    onSecondary = VerdeOnSecondaryDark,
-    secondaryContainer = VerdeSecondaryContainerDark
+    primary = BrandNeonMint,
+    onPrimary = BrandNavyBackground,
+    primaryContainer = BrandRichBlue,
+    onPrimaryContainer = Color.White,
+    secondary = BrandAquaBlue,
+    onSecondary = BrandNavyBackground,
+    secondaryContainer = BrandDarkCard,
+    onSecondaryContainer = BrandNeonMint,
+    background = BrandNavyBackground,
+    surface = BrandNavyBackground,
+    onBackground = Color.White,
+    onSurface = BrandIceWhite
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = CelestePrimaryLight,
-    onPrimary = CelesteOnPrimaryLight,
-    primaryContainer = CelestePrimaryContainerLight,
-    secondary = VerdeSecondaryLight,
-    onSecondary = VerdeOnSecondaryLight,
-    secondaryContainer = VerdeSecondaryContainerLight
-    // keep other default surface colors
+    primary = BrandRichBlue,
+    onPrimary = Color.White,
+    primaryContainer = BrandIceWhite,
+    onPrimaryContainer = BrandRichBlue,
+    secondary = BrandAquaBlue,
+    onSecondary = Color.White,
+    secondaryContainer = BrandNeonMint,
+    onSecondaryContainer = BrandNavyBackground,
+    background = Color(0xFFF5F9FF),
+    surface = Color.White,
+    onBackground = BrandNavyBackground,
+    onSurface = BrandNavyBackground
 )
 
 @Composable

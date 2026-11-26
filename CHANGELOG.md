@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 45: Perfeccionamiento de Identidad (Color Matching Exacto)
+- **Extracción de Colores Nativos:** Se analizó el logotipo original del proyecto para extraer los códigos hexadecimales exactos.
+- **Modo Oscuro Inmersivo (Navy & Neon):** El fondo de la aplicación ahora coincide exactamente con el "Azul Naval Profundo" (`#0A111F`) del logo. Los acentos, letras y botones principales ahora brillan con el "Verde Neón/Menta" (`#1DF2A4`) y el "Cian" (`#02B8DF`), creando una experiencia visual envolvente, tecnológica y 100% fiel a la marca original.
+
 ## Etapa 44: Forzado de Identidad Visual (Color Theming)
 - **Aplicación de Paleta:** Se detectó que el tema Material 3 heredaba colores base del sistema por defecto. Se modificó el código de todas las pantallas para inyectar forzosamente los colores "Celeste" y "Verde" en los componentes clave (Barras superiores, Botones Flotantes, y Tarjetas), haciendo que la aplicación finalmente refleje la identidad de la marca.
 

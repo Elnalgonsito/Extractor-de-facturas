@@ -2,16 +2,10 @@ package com.tecnoayuda.extractorfacturas.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val CelestePrimaryLight = Color(0xFF00838F) // Cyan/Teal dark
-val CelesteOnPrimaryLight = Color(0xFFFFFFFF)
-val CelestePrimaryContainerLight = Color(0xFF80DEEA) // Celeste claro
-val VerdeSecondaryLight = Color(0xFF2E7D32) // Verde brillante
-val VerdeOnSecondaryLight = Color(0xFFFFFFFF)
-val VerdeSecondaryContainerLight = Color(0xFFA5D6A7)
-
-val CelestePrimaryDark = Color(0xFF4DD0E1)
-val CelesteOnPrimaryDark = Color(0xFF00363A)
-val CelestePrimaryContainerDark = Color(0xFF006064)
-val VerdeSecondaryDark = Color(0xFF81C784)
-val VerdeOnSecondaryDark = Color(0xFF1B5E20)
-val VerdeSecondaryContainerDark = Color(0xFF2E7D32)
+// Brand Colors extracted directly from Logo
+val BrandNavyBackground = Color(0xFF0A111F)
+val BrandNeonMint = Color(0xFF1DF2A4)
+val BrandRichBlue = Color(0xFF1047A9)
+val BrandAquaBlue = Color(0xFF02B8DF)
+val BrandIceWhite = Color(0xFFB9DEEA)
+val BrandDarkCard = Color(0xFF121E36) // Slightly lighter than background for cards
