@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 42: Branding y Tematización
+- **Logo Oficial:** Se integró el logo oficial de la aplicación (`app_logo.webp`) reemplazando los íconos genéricos de Android en el `AndroidManifest.xml`.
+- **Paleta de Colores Dinámica:** Se extrajeron los colores corporativos predominantes del nuevo logo mediante un script. La interfaz gráfica completa (Material 3) fue rediseñada para adoptar esta nueva paleta (Azul Oscuro Corporativo) como colores primarios, secundarios y terciarios, unificando la identidad visual tanto en el tema claro como oscuro.
+
 ## Etapa 41: Auditoría Fiscal Inteligente (Validación SAT)
 - **Reutilización Estratégica de Campos:** Se replanteó el propósito del campo "Link para facturar" dentro del contexto de Facturas. Dado que una factura ya no necesita facturarse, este campo ahora se transforma dinámicamente en "Enlace de Verificación (SAT)". 
 - **Propósito y Beneficios:** Aprovechando que el escáner híbrido extrae el código QR nativo del CFDI, esta URL se utiliza ahora para comprobación fiscal. Se agregó un botón de acceso directo que abre la página oficial del SAT en el navegador, permitiendo al usuario (o al contador) auditar con un solo toque si la factura está "Vigente" o "Cancelada", previniendo fraudes y agilizando la revisión contable sin salir del flujo de trabajo.
