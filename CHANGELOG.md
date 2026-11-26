@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 46: Corrección de Colores Dinámicos (Material You)
+- **Forzado de Identidad de Marca:** Se detectó que los dispositivos modernos (Android 12+) estaban sobrescribiendo los colores de la aplicación utilizando la paleta de colores del fondo de pantalla del usuario (Dynamic Color / Material You), lo que resultaba en tonos lavanda y azules opacos. Se deshabilitó el color dinámico para forzar al sistema operativo a respetar el Verde Neón (`#1DF2A4`) y el Cian (`#02B8DF`) de la marca original en todas las pantallas.
+
+
 ## Etapa 45: Perfeccionamiento de Identidad (Color Matching Exacto)
 - **Extracción de Colores Nativos:** Se analizó el logotipo original del proyecto para extraer los códigos hexadecimales exactos.
 - **Modo Oscuro Inmersivo (Navy & Neon):** El fondo de la aplicación ahora coincide exactamente con el "Azul Naval Profundo" (`#0A111F`) del logo. Los acentos, letras y botones principales ahora brillan con el "Verde Neón/Menta" (`#1DF2A4`) y el "Cian" (`#02B8DF`), creando una experiencia visual envolvente, tecnológica y 100% fiel a la marca original.

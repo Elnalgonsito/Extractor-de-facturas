@@ -47,7 +47,7 @@ private val LightColorScheme = lightColorScheme(
 fun ExtractorDeFacturasTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // FORCE FALSE to use our brand colors
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

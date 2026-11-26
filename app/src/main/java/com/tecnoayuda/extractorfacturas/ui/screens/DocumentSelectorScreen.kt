@@ -48,8 +48,8 @@ fun DocumentSelectorScreen(
                     onClick = { onSelectDocumentType("Ticket") },
                     modifier = Modifier.fillMaxWidth().height(120.dp).animateContentSize(),
                     colors = CardDefaults.elevatedCardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -67,8 +67,8 @@ fun DocumentSelectorScreen(
                     onClick = { onSelectDocumentType("Factura") },
                     modifier = Modifier.fillMaxWidth().height(120.dp).animateContentSize(),
                     colors = CardDefaults.elevatedCardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
                     )
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
