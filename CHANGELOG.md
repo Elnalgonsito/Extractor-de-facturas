@@ -1,5 +1,8 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 48: Corrección de Alucinación Matemática (Impuestos)
+- **Ingeniería de Prompts (Math Guard):** Se detectó que el modelo Qwen (Groq) ocasionalmente alucinaba al realizar operaciones matemáticas, sumando los impuestos extraídos al "Total" que ya venía impreso en el documento. Se inyectaron reglas lógicas estrictas en los prompts de Tickets y Facturas, prohibiendo a la IA alterar el Total impreso y definiendo claramente que el IVA/IEPS ya vienen incluidos en el monto final.
+
 ## Etapa 47: Generación de Instalable (APK)
 - **Distribución de la App:** Se compiló y generó el archivo instalable de la aplicación (`ExtractorDeFacturas.apk`). Este archivo fue agregado al repositorio en la carpeta `apk_descargable` para permitir la descarga e instalación directa en cualquier dispositivo Android sin necesidad de utilizar el entorno de desarrollo (Android Studio).
 

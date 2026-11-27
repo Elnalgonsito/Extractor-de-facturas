@@ -122,6 +122,7 @@ Reglas estables:
 - Desglosa cada concepto con su IVA (16% u 8% fronterizo) e IEPS si aplica. Si no, pon 0.0.
 - Para 'formaPago' y 'metodoPago', extrae la DESCRIPCIÓN en texto claro (ej. "Tarjeta de crédito", "Transferencia", "Pago en una sola exhibición"), NO extraigas las claves numéricas (01, 03, 04) ni las abreviaciones (PUE, PPD).
 - Asigna 0.0 a montos no presentes. No inventes datos.
+- El 'total' debe ser EXACTAMENTE el monto final a pagar impreso en el comprobante. NO le sumes el IVA ni el IEPS al total impreso, el total impreso ya los incluye.
 Devuelve ÚNICAMENTE un JSON válido que cumpla esta estructura exacta (sin Markdown): 
 { "uuid": "...", "serie": "...", "folio": "...", "fechaEmision": "...", "tipoComprobante": "...", "lugarExpedicion": "...", "emisor": { "rfc": "...", "razonSocial": "...", "regimenFiscal": "..." }, "receptor": { "rfc": "...", "razonSocial": "...", "usoCfdi": "..." }, "conceptos": [ { "cantidad": 0.0, "unidad": "...", "claveProdServ": "...", "descripcion": "...", "valorUnitario": 0.0, "importe": 0.0, "tasaIva": 0.0, "montoIva": 0.0, "tasaIeps": 0.0, "montoIeps": 0.0 } ], "subtotal": 0.0, "descuentos": 0.0, "ivaTotal": 0.0, "iepsTotal": 0.0, "retencionesIsr": 0.0, "retencionesIva": 0.0, "total": 0.0, "moneda": "MXN", "tipoCambio": 1.0, "formaPago": "...", "metodoPago": "...", "link_facturacion": "..." }"""
 
@@ -140,6 +141,11 @@ class GeminiInvoiceParser {
             Eres una API estricta de extracción de datos contables de tickets y facturas.
             Tu única tarea es extraer la información solicitada de la imagen y devolverla EXCLUSIVAMENTE en formato JSON.
             No debes incluir saludos, explicaciones, ni etiquetas de código (como ```json o ```).
+            
+            REGLA MATEMÁTICA MUY IMPORTANTE: 
+            - El campo 'total' debe ser EXACTAMENTE el monto final cobrado que aparece impreso en el ticket.
+            - NO le sumes el 'iva' ni el 'ieps' al total impreso, el total del ticket YA INCLUYE los impuestos.
+            - El 'subtotal' es el monto antes de impuestos. Si el ticket no detalla el subtotal ni el IVA, déjalos como null.
             
             Estructura JSON requerida:
             {
