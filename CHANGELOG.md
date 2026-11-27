@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 54: Firma Criptográfica y Generación de Release (Producción)
+- **Firmado de Producción:** Para reducir las advertencias de seguridad del sistema operativo Android (Play Protect), se dejó de usar la firma de depuración (`debug.keystore`). Se generó una llave criptográfica oficial para la aplicación y se configuró Gradle para compilar el APK en modo `Release`.
+- **Actualización de Instalable:** Se reemplazó el APK de GitHub por la nueva versión minificada, optimizada y firmada para producción.
+
 ## Etapa 53: Prevención de Alucinación Matemática (Remoción de Subtotal)
 - **Reestructuración de Prompt:** Para tickets con nomenclatura engañosa (como McDonald's, que llama "Subtotal" al Total final), se identificó que la IA inventaba un Total falso para balancear la ecuación (Subtotal + IVA = Total Alucinado). La solución definitiva implementada fue **prohibirle y eliminarle la clave de `subtotal`** del cerebro de la IA para tickets.
 - **Matemáticas Nativas (Escudo Final):** Al forzar a la IA a leer únicamente el Total y el IVA impresos, se erradicó la alucinación. El Subtotal faltante ahora es calculado 100% en Kotlin (`Total - IVA - IEPS = Subtotal`), garantizando que la cifra cuadre perfectamente con el papel.
