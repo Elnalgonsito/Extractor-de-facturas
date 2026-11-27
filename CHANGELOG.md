@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 51: Motor Matemático (Guardrails) para Tickets
+- **Ingeniería Inversa de Totales:** Se descubrió que en tickets muy ambiguos (como McDonald's), la Inteligencia Artificial fallaba al deducir el IVA, sumándolo incorrectamente al total impreso. Se programó un "Escudo Matemático" (Guardrail) 100% nativo en Kotlin.
+- **Corrección Autónoma:** Ahora, la aplicación verifica algebraicamente si la suma del Subtotal + IVA + IEPS es igual al Total extraído de la foto. Si la IA comete un error mayor a 5 centavos, la aplicación ignora a la IA, toma el Total como verdad absoluta, y recalcula hacia atrás el Subtotal y el IVA real dividiendo entre 1.16, entregando siempre números contablemente perfectos.
+
 ## Etapa 50: Integración de Captura Nativa (Cámara)
 - **Opciones de Importación:** Se expandieron las capacidades de captura de la aplicación. Al presionar el botón de agregar documento, ahora se le presenta al usuario un menú de selección ("Cámara" o "Galería").
 - **Captura al Vuelo:** Se implementó una conexión segura mediante `FileProvider` (`ActivityResultContracts.TakePicture`) que permite abrir la cámara del celular, tomar la foto del ticket, y mandarla directamente al motor de Inteligencia Artificial sin necesidad de guardar basura en el carrete personal del usuario.

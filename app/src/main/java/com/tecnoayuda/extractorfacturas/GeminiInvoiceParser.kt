@@ -270,7 +270,33 @@ class GeminiInvoiceParser {
                         facturaExtraida = factura
                     )
                 } else {
-                    jsonParser.decodeFromString<InvoiceData>(jsonLimpio)
+                    val rawData = jsonParser.decodeFromString<InvoiceData>(jsonLimpio)
+                    val total = rawData.total ?: 0.0
+                    var subtotal = rawData.subtotal ?: 0.0
+                    var iva = rawData.iva ?: 0.0
+                    val ieps = rawData.ieps ?: 0.0
+                    
+                    // Si el total existe y es mayor a 0, verificamos la coherencia matemática
+                    if (total > 0.0) {
+                        val sumaEsperada = subtotal + iva + ieps
+                        // Si la diferencia es mayor a 5 centavos, la IA alucinó la suma
+                        if (abs(sumaEsperada - total) > 0.05) {
+                            // Asumimos que el Total impreso es la verdad absoluta.
+                            // Recalculamos matemáticamente hacia atrás (Asumiendo 16% de IVA y 0% IEPS si no había IEPS claro)
+                            // Subtotal = Total / 1.16
+                            subtotal = total / 1.16
+                            iva = total - subtotal - ieps
+                            
+                            // Redondeamos a 2 decimales para que se vea limpio
+                            subtotal = Math.round(subtotal * 100.0) / 100.0
+                            iva = Math.round(iva * 100.0) / 100.0
+                        }
+                    }
+                    
+                    rawData.copy(
+                        subtotal = if (subtotal > 0.0) subtotal else rawData.subtotal,
+                        iva = if (iva > 0.0) iva else rawData.iva
+                    )
                 }
                 break
             } catch (e: Exception) {
