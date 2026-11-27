@@ -142,10 +142,12 @@ class GeminiInvoiceParser {
             Tu única tarea es extraer la información solicitada de la imagen y devolverla EXCLUSIVAMENTE en formato JSON.
             No debes incluir saludos, explicaciones, ni etiquetas de código (como ```json o ```).
             
-            REGLA MATEMÁTICA MUY IMPORTANTE: 
-            - El campo 'total' debe ser EXACTAMENTE el monto final cobrado que aparece impreso en el ticket.
-            - NO le sumes el 'iva' ni el 'ieps' al total impreso, el total del ticket YA INCLUYE los impuestos.
-            - El 'subtotal' es el monto antes de impuestos. Si el ticket no detalla el subtotal ni el IVA, déjalos como null.
+            REGLAS ABSOLUTAS DE LECTURA (PROHIBIDO CALCULAR): 
+            - Tienes ESTRICTAMENTE PROHIBIDO realizar cálculos matemáticos, multiplicaciones o sumas.
+            - Solo puedes extraer los números EXACTOS que están impresos en el papel.
+            - Si el ticket dice "Total Comedor c/IVA" o incluye la palabra "c/IVA" o "TOTAL", ese número es el 'total' final (Ejemplo: 10.00).
+            - El 'iva' debe ser el número exacto impreso junto a "IVA" o "TOTAL IVA" (Ejemplo: 1.38). NUNCA calcules el 16% por tu cuenta.
+            - Si el 'subtotal' no viene claramente impreso o dice lo mismo que el total, déjalo como null.
             
             Estructura JSON requerida:
             {

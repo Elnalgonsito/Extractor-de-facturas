@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 52: Eliminación de Alucinación Predictiva (Nomenclaturas Complejas)
+- **Mapeo de Nomenclatura Comercial:** Se modificó el comportamiento base de la Inteligencia Artificial al detectar que tickets de ciertas franquicias (como McDonald's) utilizan nomenclaturas inusuales ("Total Comedor c/IVA"). La IA confundía esto con un Subtotal y aplicaba cálculos falsos por encima.
+- **Supresión de Cálculo:** Se le prohibió estrictamente a la red neuronal realizar cualquier tipo de cálculo o suma predictiva, forzándola a comportarse únicamente como un extractor visual puro. Ahora delega el 100% de la responsabilidad algebraica al Motor Matemático nativo de Kotlin implementado en la etapa anterior.
+
 ## Etapa 51: Motor Matemático (Guardrails) para Tickets
 - **Ingeniería Inversa de Totales:** Se descubrió que en tickets muy ambiguos (como McDonald's), la Inteligencia Artificial fallaba al deducir el IVA, sumándolo incorrectamente al total impreso. Se programó un "Escudo Matemático" (Guardrail) 100% nativo en Kotlin.
 - **Corrección Autónoma:** Ahora, la aplicación verifica algebraicamente si la suma del Subtotal + IVA + IEPS es igual al Total extraído de la foto. Si la IA comete un error mayor a 5 centavos, la aplicación ignora a la IA, toma el Total como verdad absoluta, y recalcula hacia atrás el Subtotal y el IVA real dividiendo entre 1.16, entregando siempre números contablemente perfectos.
