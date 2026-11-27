@@ -31,6 +31,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tecnoayuda.extractorfacturas.data.local.Invoice
 
+import androidx.core.content.FileProvider
+import java.io.File
+import android.net.Uri
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.IconButton
 
@@ -44,6 +56,18 @@ fun InvoiceListScreen(
     onBackClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    var showImageSourceDialog by remember { mutableStateOf(false) }
+    var tempCameraUri by remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
+
+    val takePictureLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            tempCameraUri?.let { uri ->
+                onAddInvoiceClick(uri.toString(), "")
+            }
+        }
+    }
+
     val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
             onAddInvoiceClick("", uri.toString())
@@ -69,7 +93,7 @@ fun InvoiceListScreen(
         },
         floatingActionButton = {
             LargeFloatingActionButton(
-                onClick = { pickMedia.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                onClick = { showImageSourceDialog = true },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
@@ -108,6 +132,35 @@ fun InvoiceListScreen(
                     )
                 }
             }
+        }
+        
+        if (showImageSourceDialog) {
+            AlertDialog(
+                onDismissRequest = { showImageSourceDialog = false },
+                title = { Text("Agregar Documento") },
+                text = { Text("Elige desde dónde quieres subir la imagen:") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showImageSourceDialog = false
+                        // Create a temporary file
+                        val imagesDir = File(context.cacheDir, "images").apply { mkdirs() }
+                        val tempFile = File.createTempFile("CAPTURED_", ".jpg", imagesDir)
+                        val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", tempFile)
+                        tempCameraUri = uri
+                        takePictureLauncher.launch(uri)
+                    }) {
+                        Text("Cámara")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        showImageSourceDialog = false
+                        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    }) {
+                        Text("Galería")
+                    }
+                }
+            )
         }
     }
 }

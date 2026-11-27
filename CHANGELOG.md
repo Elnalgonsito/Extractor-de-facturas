@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 50: Integración de Captura Nativa (Cámara)
+- **Opciones de Importación:** Se expandieron las capacidades de captura de la aplicación. Al presionar el botón de agregar documento, ahora se le presenta al usuario un menú de selección ("Cámara" o "Galería").
+- **Captura al Vuelo:** Se implementó una conexión segura mediante `FileProvider` (`ActivityResultContracts.TakePicture`) que permite abrir la cámara del celular, tomar la foto del ticket, y mandarla directamente al motor de Inteligencia Artificial sin necesidad de guardar basura en el carrete personal del usuario.
+
 ## Etapa 49: Corrección de Navegación de Carpetas
 - **Flujo de Usuario (UX):** Se corrigió un error ("bug") en la pantalla de "Carpetas" donde el botón de retroceso de la barra superior estaba desvinculado. Ahora, el botón de la flecha retrocede correctamente hacia la pantalla inicial del Selector de Documentos (Tickets / Facturas).
 
