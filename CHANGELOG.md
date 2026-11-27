@@ -1,5 +1,9 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 53: Prevención de Alucinación Matemática (Remoción de Subtotal)
+- **Reestructuración de Prompt:** Para tickets con nomenclatura engañosa (como McDonald's, que llama "Subtotal" al Total final), se identificó que la IA inventaba un Total falso para balancear la ecuación (Subtotal + IVA = Total Alucinado). La solución definitiva implementada fue **prohibirle y eliminarle la clave de `subtotal`** del cerebro de la IA para tickets.
+- **Matemáticas Nativas (Escudo Final):** Al forzar a la IA a leer únicamente el Total y el IVA impresos, se erradicó la alucinación. El Subtotal faltante ahora es calculado 100% en Kotlin (`Total - IVA - IEPS = Subtotal`), garantizando que la cifra cuadre perfectamente con el papel.
+
 ## Etapa 52: Eliminación de Alucinación Predictiva (Nomenclaturas Complejas)
 - **Mapeo de Nomenclatura Comercial:** Se modificó el comportamiento base de la Inteligencia Artificial al detectar que tickets de ciertas franquicias (como McDonald's) utilizan nomenclaturas inusuales ("Total Comedor c/IVA"). La IA confundía esto con un Subtotal y aplicaba cálculos falsos por encima.
 - **Supresión de Cálculo:** Se le prohibió estrictamente a la red neuronal realizar cualquier tipo de cálculo o suma predictiva, forzándola a comportarse únicamente como un extractor visual puro. Ahora delega el 100% de la responsabilidad algebraica al Motor Matemático nativo de Kotlin implementado en la etapa anterior.

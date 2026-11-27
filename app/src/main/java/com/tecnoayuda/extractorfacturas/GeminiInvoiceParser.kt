@@ -145,9 +145,9 @@ class GeminiInvoiceParser {
             REGLAS ABSOLUTAS DE LECTURA (PROHIBIDO CALCULAR): 
             - Tienes ESTRICTAMENTE PROHIBIDO realizar cálculos matemáticos, multiplicaciones o sumas.
             - Solo puedes extraer los números EXACTOS que están impresos en el papel.
+            - NO INCLUYAS la clave "subtotal" en tu respuesta. Solo extrae el IVA, el IEPS y el TOTAL exacto impreso.
             - Si el ticket dice "Total Comedor c/IVA" o incluye la palabra "c/IVA" o "TOTAL", ese número es el 'total' final (Ejemplo: 10.00).
-            - El 'iva' debe ser el número exacto impreso junto a "IVA" o "TOTAL IVA" (Ejemplo: 1.38). NUNCA calcules el 16% por tu cuenta.
-            - Si el 'subtotal' no viene claramente impreso o dice lo mismo que el total, déjalo como null.
+            - El 'iva' debe ser el número exacto impreso junto a "IVA" o "TOTAL IVA". NUNCA calcules el 16% por tu cuenta.
             
             Estructura JSON requerida:
             {
@@ -157,23 +157,11 @@ class GeminiInvoiceParser {
                 "hora": "Hora de emisión en formato HH:MM:SS",
                 "regimen_fiscal": "Régimen fiscal (si aplica)",
                 "metodo_pago": "Método de pago (efectivo, tarjeta, etc.)",
-                "articulos": [
-                    {
-                        "cantidad": 1.0,
-                        "descripcion": "Descripción del producto o servicio",
-                        "importe": 100.0
-                    }
-                ],
-                "subtotal": 100.0,
-                "iva": 16.0,
+                "articulos": [],
+                "iva": 1.38,
                 "ieps": 0.0,
-                "impuestos": [
-                    {
-                        "tipo": "IVA",
-                        "monto": 16.0
-                    }
-                ],
-                "total": 116.0,
+                "impuestos": [],
+                "total": 10.00,
                 "link_facturacion": "URL para facturar (si existe)"
             }
             
@@ -274,24 +262,20 @@ class GeminiInvoiceParser {
                 } else {
                     val rawData = jsonParser.decodeFromString<InvoiceData>(jsonLimpio)
                     val total = rawData.total ?: 0.0
-                    var subtotal = rawData.subtotal ?: 0.0
                     var iva = rawData.iva ?: 0.0
                     val ieps = rawData.ieps ?: 0.0
+                    var subtotal = rawData.subtotal ?: 0.0
                     
-                    // Si el total existe y es mayor a 0, verificamos la coherencia matemática
+                    // El subtotal fue prohibido en el prompt, así que lo calculamos matemáticamente
+                    // partiendo de la verdad absoluta (el Total impreso).
                     if (total > 0.0) {
-                        val sumaEsperada = subtotal + iva + ieps
-                        // Si la diferencia es mayor a 5 centavos, la IA alucinó la suma
-                        if (abs(sumaEsperada - total) > 0.05) {
-                            // Asumimos que el Total impreso es la verdad absoluta.
-                            // Recalculamos matemáticamente hacia atrás (Asumiendo 16% de IVA y 0% IEPS si no había IEPS claro)
-                            // Subtotal = Total / 1.16
-                            subtotal = total / 1.16
-                            iva = total - subtotal - ieps
-                            
-                            // Redondeamos a 2 decimales para que se vea limpio
-                            subtotal = Math.round(subtotal * 100.0) / 100.0
-                            iva = Math.round(iva * 100.0) / 100.0
+                        subtotal = total - iva - ieps
+                        subtotal = Math.round(subtotal * 100.0) / 100.0
+                        
+                        // Si por alguna razón extraña la IA extrajo un IVA mayor al Total
+                        if (subtotal < 0) {
+                            iva = 0.0
+                            subtotal = total
                         }
                     }
                     
