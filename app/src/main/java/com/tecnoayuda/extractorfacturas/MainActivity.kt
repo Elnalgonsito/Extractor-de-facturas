@@ -104,7 +104,10 @@ fun AppNavigation() {
                     onFolderClick = { folder ->
                         backStack.add(InvoiceListRoute(folderId = folder.id, folderName = folder.name, documentType = folder.documentType))
                     },
-                    onDeleteFolder = { folder -> viewModel.deleteFolder(folder) }
+                    onDeleteFolder = { folder -> viewModel.deleteFolder(folder) },
+                    onBackClick = {
+                        if (backStack.size > 1) backStack.removeLastOrNull()
+                    }
                 )
             }
 

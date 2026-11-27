@@ -1,5 +1,8 @@
 # Historial de Cambios y Mejoras (Changelog)
 
+## Etapa 49: Corrección de Navegación de Carpetas
+- **Flujo de Usuario (UX):** Se corrigió un error ("bug") en la pantalla de "Carpetas" donde el botón de retroceso de la barra superior estaba desvinculado. Ahora, el botón de la flecha retrocede correctamente hacia la pantalla inicial del Selector de Documentos (Tickets / Facturas).
+
 ## Etapa 48: Corrección de Alucinación Matemática (Impuestos)
 - **Ingeniería de Prompts (Math Guard):** Se detectó que el modelo Qwen (Groq) ocasionalmente alucinaba al realizar operaciones matemáticas, sumando los impuestos extraídos al "Total" que ya venía impreso en el documento. Se inyectaron reglas lógicas estrictas en los prompts de Tickets y Facturas, prohibiendo a la IA alterar el Total impreso y definiendo claramente que el IVA/IEPS ya vienen incluidos en el monto final.
 
